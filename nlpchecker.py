@@ -2,19 +2,25 @@
 
 from nlp import NLP
 
-string = "employee with dept id 10 emp id 3"
+string = "employee name with dept id not greater than 5 and dept id not less than 1"
 
 a = NLP(string)
-
+a.replaceContractions()
 a.tokenize()
 a.removePunctAndStop()
 a.replaceRelations()
 a.replaceAttr()
 a.reconstruct()
+a.replaceOperators()
 a.replaceSynAttr()
+a.replaceSynCommon()
+print (a.lowercase_query)
 a.constantAssociation()
+a.commonAssociation()
 a.unknownAttr()
-
-print (a.SELECT)
-print (a.FROM)
+a.relationSearch()
+a.negationCheck()
+print(a.SELECT)
+print(a.FROM)
 print (a.WHERE)
+

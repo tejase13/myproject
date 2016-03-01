@@ -2,7 +2,7 @@
 
 import shelve
 import collections
-relations1 = {'worker':'employee', 'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'workforce':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'work':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
+relations1 = {'worker':'employee', 'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'workforce':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
 
 relations = {}
 for key,value in relations1.items():
@@ -36,10 +36,11 @@ common_attr = { 'hr':'dname','marketing':'dname','sales':'dname','finance':'dnam
 
 relations_attr = {'employee':{'eid':'eid','did':'did','salary':'salary','post':'post','phone':'phone','pid':'pid'}, 'department':{'did':'deptid','dname':'dname','hod':'hod'}, 'project':{'pid':'projid','pname':'pname','pstrength':'pstrength'}}
 
-replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', '*'), ('greater or equal', '*'), ('higher and equal', '*'), ('higher or equal', '*'),('more','>'),('more or equal','*'),('more and equal','*'),('more equal','*'),('<=', '/'), ('less equal', '/'), ('lesser and equal', '/'), ('less and equal', '/'), ('lesser or equal', '/'),  ('lesser and equal', '/'),('lower and equal', '/'), ('lower or equal', '/'), ('smaller and equal', '/'), ('smaller or equal', '/'),('!=', '!'), ('<>', '!'), ('not equal', '!'), ('no', '!'),('>', '>'), ('greater', '>'), ('higher', '>'),('<','<'), ('lesser', '<'), ('smaller', '<'), ('lower', '<'))
+replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', '*'), ('greater or equal', '*'), ('higher and equal', '*'), ('higher or equal', '*'),('more','>'),('more or equal','*'),('more and equal','*'),('more equal','*'), ('>', '>'), ('greater', '>'), ('higher', '>'),('more', '>'), ('<=', '/'), ('less equal', '/'), ('lesser and equal', '/'), ('less and equal', '/'), ('lesser or equal', '/'),  ('lesser and equal', '/'),('lower and equal', '/'), ('lower or equal', '/'), ('smaller and equal', '/'), ('smaller or equal', '/'), ('<','<'), ('lesser', '<'), ('smaller', '<'), ('lower', '<'), ('less', '<'), ('!=', '!'), ('<>', '!'), ('not equal', '!'),('equal','='))
 
 replace_operators = collections.OrderedDict(replace_operators)
 ant_operators = {'=':'!','!':'=','/':'>','>':'/','*':'<','<':'*'}
+operator_list = ['=','!','/','>','<','*']
 replace_contractions = { 
 "aini\'t": "am not",
 "aren\'t": "are not",
@@ -172,5 +173,5 @@ conf['relations_attr'] = relations_attr
 conf['replace_contractions'] = replace_contractions
 conf['replace_operators'] = replace_operators
 conf['ant_operators'] = ant_operators
-
+conf['operator_list'] = operator_list
 conf.close()
