@@ -2,7 +2,7 @@
 
 from nlp import NLP
 
-string = "employee name where eid is either 5 or 15"
+string ="empid where eid is equal to 6 or eid is 4 and pid is 20 or eid =555"
 
 a = NLP(string)
 a.replaceContractions()
@@ -15,8 +15,7 @@ a.replaceOperators()
 a.replaceSynAttr()
 a.replaceSynCommon()
 print (a.lowercase_query)
-a.constantAssociation()
-a.commonAssociation()
+a.andOr()
 a.unknownAttr()
 a.relationSearch()
 a.negationCheck()

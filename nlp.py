@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 import string
-import shelve
+import shelve,time
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -106,46 +106,64 @@ class NLP:
 	def operatorSearch(self, j, i):
 		for index in range(j,i):
 			if self.constant_assoc[index] in self.operator_list:
-				return self.constant_assoc[index]
+				return index
+		return None
 
-	def constantAssociation(self):
-		self.SELECT = []
-		self.WHERE= {}
-		self.FROM = {}
-		self.constant_assoc = self.lowercase_query.split(' ')
+	def constantAssociation(self,start,end):
+		#self.SELECT = []
+		#self.WHERE= {}
+		#self.FROM = {}
+		#self.constant_assoc = self.lowercase_query.split(' ')
+		print(start)
+		print(end)
+		temp_list = []
+		counter = 0
+		defaultOperator = ""
 		while True:
 			match = False
-			for i in range(len(self.constant_assoc)):
+			for i in range(start,end):
 				if self.constant_assoc[i].isdigit():
-					j = i - 1
+					j = i 
 					match = True
-					while j >= 0:
+					while j >= start:
 						if self.constant_assoc[j] in self.attr_relations:
 							operator = self.operatorSearch(j,i)
-							if self.constant_assoc[j] in self.WHERE:  # if attribute already exists in WHERE dictionary append to the list of values associated with that attributed
-								val_list = self.WHERE[self.constant_assoc[j]]
-								val_list.append(operator)
-								val_list.append(self.constant_assoc[i])
-								self.WHERE[self.constant_assoc[j]] = val_list
-							else:  # if attribute does not exist in dictionary then make new list and add
-								val_list = [operator,self.constant_assoc[i]]
-								self.WHERE[self.constant_assoc[j]] = val_list
+							if operator is None:
+								temp_list.append(self.constant_assoc[j])
+								temp_list.append(defaultOperator)
+								temp_list.append(self.constant_assoc[i])
+								self.constant_assoc.remove(self.constant_assoc[i])
+								counter += 1
 
-							# increasing count in FROM dictionary
-							rel = self.attr_relations[self.constant_assoc[j]]
-							for value in rel:
-								if value in self.FROM:
-									self.FROM[value] += 1
-								else:
-									self.FROM[value] = 1
-							self.constant_assoc.remove(self.constant_assoc[i])
-							self.constant_assoc.remove(self.constant_assoc[j])
+							else:
+								temp_list.append(self.constant_assoc[j])
+								temp_list.append(self.constant_assoc[operator])
+								temp_list.append(self.constant_assoc[i])
+								defaultOperator = self.constant_assoc[operator] 
+								self.constant_assoc.remove(self.constant_assoc[i])
+								self.constant_assoc.remove(self.constant_assoc[operator])
+								counter += 2
 							break
+
 						j = j - 1
+					if j < start:
+						operator = self.operatorSearch(start,i)
+						if operator is not None:
+							temp_list.append(self.constant_assoc[operator])
+							end -= 1
+						temp_list.append(self.constant_assoc[i])
+						self.constant_assoc.remove(self.constant_assoc[i])
+						if operator is not None:
+							self.constant_assoc.remove(self.constant_assoc[operator])
+						end -= 1
 					break
 			
 			if match is False:
 				break
+			end = end - counter
+			counter = 0
+		print(temp_list)
+		return [end, temp_list]	
 
 	
 	def commonAssociation(self):
@@ -174,6 +192,81 @@ class NLP:
 
 			if match is False:
 				break
+
+	def isAttr(self, var):
+		if var in self.attr_relations:
+			return True
+		return False
+
+	def isOper(self, var):
+		if var in self.operator_list:
+			return True
+		return False
+
+
+	def andOr(self):
+		self.constant_assoc = self.lowercase_query.split(' ')
+		print(self.constant_assoc)
+		where = []
+		i = -1 
+		index = 0
+		defaultOperator = ""
+		defaultAttribute = ""
+		while True:
+			if self.constant_assoc[index] == "and" or self.constant_assoc[index] == "or":
+				lister = self.constantAssociation(i + 1,index)
+				list2 = lister[1]
+				index = lister[0]
+				i = index
+				index2 = 0
+				while True:
+					if index2 % 3 == 0:
+						if not self.isAttr(list2[index2]):
+							list2.insert(index2,defaultAttribute)
+						where.append(list2[index2])
+
+					if index2 % 3 == 1:
+						if not self.isOper(list2[index2]):
+							list2.insert(index2,defaultOperator)
+						where.append(list2[index2])
+
+					if index2 % 3 == 2: 
+						where.append(list2[index2])
+						where.append(self.constant_assoc[index])
+					index2 += 1
+					if index2 >= len(list2):
+						break
+				print(where)
+				defaultAttribute = where[-4]
+				defaultOperator = where[-3]
+
+			index += 1
+			if index >= len(self.constant_assoc):
+					break
+
+		lister = self.constantAssociation(i+1,index)
+		list2 = lister[1]
+		index = lister[0]
+		i = index
+		index2 = 0
+		while True:	
+			if index2 % 3 == 0:
+				if not self.isAttr(list2[index2]):
+					list2.insert(index2,defaultAttribute)
+				where.append(list2[index2])
+
+			if index2 % 3 == 1:
+				if not self.isOper(list2[index2]):
+					list2.insert(index2,defaultOperator)
+				where.append(list2[index2])
+
+			if index2 % 3 == 2: 
+				where.append(list2[index2])
+			index2 += 1
+			if index2 >= len(list2):
+				break
+		print (where)	
+							
 
 
 	def unknownAttr(self):
