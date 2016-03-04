@@ -36,7 +36,7 @@ common_attr = { 'hr':'dname','marketing':'dname','sales':'dname','finance':'dnam
 
 relations_attr = {'employee':{'eid':'eid','did':'did','salary':'salary','post':'post','phone':'phone','pid':'pid'}, 'department':{'did':'deptid','dname':'dname','hod':'hod'}, 'project':{'pid':'projid','pname':'pname','pstrength':'pstrength'}}
 
-replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', '*'), ('greater or equal', '*'), ('higher and equal', '*'), ('higher or equal', '*'),('more','>'),('more or equal','*'),('more and equal','*'),('more equal','*'), ('>', '>'), ('greater', '>'), ('higher', '>'),('more', '>'), ('<=', '/'), ('less equal', '/'), ('lesser and equal', '/'), ('less and equal', '/'), ('lesser or equal', '/'),  ('lesser and equal', '/'),('lower and equal', '/'), ('lower or equal', '/'), ('smaller and equal', '/'), ('smaller or equal', '/'), ('<','<'), ('lesser', '<'), ('smaller', '<'), ('lower', '<'), ('less', '<'), ('!=', '!'), ('<>', '!'), ('not equal', '!'),('equal','='))
+replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', '*'), ('greater or equal', '*'), ('higher and equal', '*'), ('higher or equal', '*'),('more','>'),('more or equal','*'),('more and equal','*'),('more equal','*'), ('>', '>'), ('greater', '>'), ('higher', '>'),('more', '>'), ('<=', '/'), ('less equal', '/'), ('lesser and equal', '/'), ('less and equal', '/'), ('lesser or equal', '/'),  ('lesser and equal', '/'),('lower and equal', '/'), ('lower or equal', '/'), ('smaller and equal', '/'), ('smaller or equal', '/'), ('<','<'), ('lesser', '<'), ('smaller', '<'), ('lower', '<'), ('less', '<'), ('!=', '!'), ('<>', '!'), ('not equal', '!'),('is equal','='),('is =','='),('equal','='),('is','='))
 
 replace_operators = collections.OrderedDict(replace_operators)
 ant_operators = {'=':'!','!':'=','/':'>','>':'/','*':'<','<':'*'}
@@ -158,7 +158,11 @@ replace_contractions = {
 "you\'ll": "you shall",
 "you\'ll\'ve": "you shall have",
 "you\'re": "you are",
-"you\'ve": "you have"
+"you\'ve": "you have",
+"neither":"not",
+"nor":"not or",
+"either":"or",
+"but":"and"
 }
 
 
