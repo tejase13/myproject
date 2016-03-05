@@ -231,10 +231,12 @@ class NLP:
 		endIndex = 0
 		defaultOperator = ""
 		defaultAttribute = ""
+		defaultLogicalOperator = "and"
 
 		#searches for and/or and finds constants and attributes before them
 		while True:
 			if self.constant_assoc[endIndex] == "and" or self.constant_assoc[endIndex] == "or":
+				defaultLogicalOperator = self.constant_assoc[endIndex]
 				returnedList = self.constantAssociation(startIndex + 1,endIndex)
 				whereElements = returnedList[1]
 				endIndex = returnedList[0]
@@ -288,9 +290,11 @@ class NLP:
 
 			if whereElementsIndex % 3 == 2: 
 				whereList.append(whereElements[whereElementsIndex])
+				whereList.append(defaultLogicalOperator)
 			whereElementsIndex += 1
 			if whereElementsIndex >= len(whereElements):
 				break
+		whereList.pop()
 		print (whereList)	
 							
 

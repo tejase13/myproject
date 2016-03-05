@@ -2,7 +2,7 @@
 
 from nlp import NLP
 
-string ="empname, dept id where eid greater than 15 or less than 20"
+string ="empname where deptid is 5, 6, 2, 8"
 
 a = NLP(string)
 a.replaceContractions()
