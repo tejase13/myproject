@@ -109,26 +109,37 @@ class NLP:
 				return index
 		return None
 
-	def constantAssociation(self,start,end):
+  	#Find all constants between startIndex and endIndex
+	def constantAssociation(self,startIndex,endIndex):
 		#self.SELECT = []
 		#self.WHERE= {}
 		#self.FROM = {}
 		#self.constant_assoc = self.lowercase_query.split(' ')
-		print(start)
-		print(end)
+		print(startIndex)
+		print(endIndex)
+
+		#temp_list stores all where clause elements in the form attr,operator,constant
 		temp_list = []
+
+		#counter is used to shift the endIndex due to removal of operators and constants
+		#stores number of elements removed in each iteration
 		counter = 0
-		defaultOperator = ""
+		defaultOperator = "="
+
 		while True:
 			match = False
-			for i in range(start,end):
+			for i in range(startIndex,endIndex):
+				#if constant is found
 				if self.constant_assoc[i].isdigit():
 					j = i 
 					match = True
-					while j >= start:
+					while j >= startIndex:
+						#if attribute is found
 						if self.constant_assoc[j] in self.attr_relations:
+							#search for operator between the position of attribute and constant
 							operator = self.operatorSearch(j,i)
-							if operator is None:
+
+							if operator is None: #use default operator 
 								temp_list.append(self.constant_assoc[j])
 								temp_list.append(defaultOperator)
 								temp_list.append(self.constant_assoc[i])
@@ -144,26 +155,32 @@ class NLP:
 								self.constant_assoc.remove(self.constant_assoc[operator])
 								counter += 2
 							break
-
 						j = j - 1
-					if j < start:
-						operator = self.operatorSearch(start,i)
+
+					#if no attribute found
+					if j < startIndex:
+						operator = self.operatorSearch(startIndex,i)
 						if operator is not None:
 							temp_list.append(self.constant_assoc[operator])
-							end -= 1
+							counter += 1
 						temp_list.append(self.constant_assoc[i])
 						self.constant_assoc.remove(self.constant_assoc[i])
 						if operator is not None:
 							self.constant_assoc.remove(self.constant_assoc[operator])
-						end -= 1
+						counter += 1
 					break
-			
+
+			#when no constant found break
 			if match is False:
 				break
-			end = end - counter
+
+			endIndex = endIndex - counter
 			counter = 0
+
 		print(temp_list)
-		return [end, temp_list]	
+
+		#return new endIndex and the list with all the elements
+		return [endIndex, temp_list]	
 
 	
 	def commonAssociation(self):
@@ -207,65 +224,74 @@ class NLP:
 	def andOr(self):
 		self.constant_assoc = self.lowercase_query.split(' ')
 		print(self.constant_assoc)
-		where = []
-		i = -1 
-		index = 0
+
+		#a list with all elements of where clause along with their and/or conjunctions
+		whereList = []
+		startIndex = -1 
+		endIndex = 0
 		defaultOperator = ""
 		defaultAttribute = ""
+
+		#searches for and/or and finds constants and attributes before them
 		while True:
-			if self.constant_assoc[index] == "and" or self.constant_assoc[index] == "or":
-				lister = self.constantAssociation(i + 1,index)
-				list2 = lister[1]
-				index = lister[0]
-				i = index
-				index2 = 0
+			if self.constant_assoc[endIndex] == "and" or self.constant_assoc[endIndex] == "or":
+				returnedList = self.constantAssociation(startIndex + 1,endIndex)
+				whereElements = returnedList[1]
+				endIndex = returnedList[0]
+				startIndex = endIndex
+				whereElementsIndex = 0
+
+				#traverse through the returned list and append attributes and operators in the list
+				#if they are not present for a particular constant
 				while True:
-					if index2 % 3 == 0:
-						if not self.isAttr(list2[index2]):
-							list2.insert(index2,defaultAttribute)
-						where.append(list2[index2])
+					if whereElementsIndex % 3 == 0:
+						if not self.isAttr(whereElements[whereElementsIndex]):
+							whereElements.insert(whereElementsIndex,defaultAttribute)
+						whereList.append(whereElements[whereElementsIndex])
 
-					if index2 % 3 == 1:
-						if not self.isOper(list2[index2]):
-							list2.insert(index2,defaultOperator)
-						where.append(list2[index2])
+					if whereElementsIndex % 3 == 1:
+						if not self.isOper(whereElements[whereElementsIndex]):
+							whereElements.insert(whereElementsIndex,defaultOperator)
+						whereList.append(whereElements[whereElementsIndex])
 
-					if index2 % 3 == 2: 
-						where.append(list2[index2])
-						where.append(self.constant_assoc[index])
-					index2 += 1
-					if index2 >= len(list2):
+					if whereElementsIndex % 3 == 2: 
+						whereList.append(whereElements[whereElementsIndex])
+						whereList.append(self.constant_assoc[endIndex])
+					whereElementsIndex += 1
+
+					if whereElementsIndex >= len(whereElements):
 						break
-				print(where)
-				defaultAttribute = where[-4]
-				defaultOperator = where[-3]
+				print(whereList)
+				defaultAttribute = whereList[-4]
+				defaultOperator = whereList[-3]
 
-			index += 1
-			if index >= len(self.constant_assoc):
+			endIndex += 1
+			if endIndex >= len(self.constant_assoc):
 					break
 
-		lister = self.constantAssociation(i+1,index)
-		list2 = lister[1]
-		index = lister[0]
-		i = index
-		index2 = 0
+		#search again when the end of list is reached
+		returnedList = self.constantAssociation(startIndex + 1,endIndex)
+		whereElements = returnedList[1]
+		endIndex = returnedList[0]
+		startIndex = endIndex
+		whereElementsIndex = 0
 		while True:	
-			if index2 % 3 == 0:
-				if not self.isAttr(list2[index2]):
-					list2.insert(index2,defaultAttribute)
-				where.append(list2[index2])
+			if whereElementsIndex % 3 == 0:
+				if not self.isAttr(whereElements[whereElementsIndex]):
+					whereElements.insert(whereElementsIndex,defaultAttribute)
+				whereList.append(whereElements[whereElementsIndex])
 
-			if index2 % 3 == 1:
-				if not self.isOper(list2[index2]):
-					list2.insert(index2,defaultOperator)
-				where.append(list2[index2])
+			if whereElementsIndex % 3 == 1:
+				if not self.isOper(whereElements[whereElementsIndex]):
+					whereElements.insert(whereElementsIndex,defaultOperator)
+				whereList.append(whereElements[whereElementsIndex])
 
-			if index2 % 3 == 2: 
-				where.append(list2[index2])
-			index2 += 1
-			if index2 >= len(list2):
+			if whereElementsIndex % 3 == 2: 
+				whereList.append(whereElements[whereElementsIndex])
+			whereElementsIndex += 1
+			if whereElementsIndex >= len(whereElements):
 				break
-		print (where)	
+		print (whereList)	
 							
 
 
