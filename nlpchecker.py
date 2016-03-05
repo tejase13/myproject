@@ -2,7 +2,7 @@
 
 from nlp import NLP
 
-string ="empname where deptid is 5, 6, 2, 8"
+string ="eid who works in dept id 5,4,3 and is a manager"
 
 a = NLP(string)
 a.replaceContractions()

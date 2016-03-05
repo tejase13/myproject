@@ -36,6 +36,7 @@ class NLP:
 		self.stop_words.remove('and')
 		self.stop_words.remove('or')
 		self.stop_words.remove('but')
+		self.stop_words.remove('did')
 		self.stop_words.append('whose')
 		self.stop_words.append('tell')
 		self.stop_words.append('give')
@@ -183,32 +184,27 @@ class NLP:
 		return [endIndex, temp_list]	
 
 	
-	def commonAssociation(self):
-		self.lowercase_query = ' '.join(self.constant_assoc)
+	def commonAssociation(self, startIndex, endIndex):
+		print(startIndex)
+		print(endIndex)
+		self.lowercase_query = ' '.join(self.constant_assoc[startIndex : endIndex])
+		print(self.lowercase_query)
+		temp_list = []
 		while True:
 			match = False
 			for key in self.common_attr:
 				if self.lowercase_query.find(key) != -1:
 					match = True
 					# similar implementation to the above method dealing with duplicates in FROM dictionary
-					if self.common_attr[key] in self.WHERE:
-						val_list = self.WHERE[self.common_attr[key]]
-						val_list.append(key)
-						self.WHERE[self.common_attr[key]] = val_list
-					else:
-						val_list = [key]
-						self.WHERE[self.common_attr[key]] = val_list 
-
-					rel = self.attr_relations[self.common_attr[key]]
-					for value in rel:
-						if value in self.FROM:
-							self.FROM[value] += 1
-						else:
-							self.FROM[value] = 1
+					temp_list.append(self.common_attr[key])
+					temp_list.append('=')
+					temp_list.append(key)
 					self.lowercase_query = self.lowercase_query.replace(key,'')
 
 			if match is False:
 				break
+		return temp_list
+
 
 	def isAttr(self, var):
 		if var in self.attr_relations:
@@ -238,14 +234,14 @@ class NLP:
 			if self.constant_assoc[endIndex] == "and" or self.constant_assoc[endIndex] == "or":
 				defaultLogicalOperator = self.constant_assoc[endIndex]
 				returnedList = self.constantAssociation(startIndex + 1,endIndex)
+
 				whereElements = returnedList[1]
 				endIndex = returnedList[0]
-				startIndex = endIndex
 				whereElementsIndex = 0
 
 				#traverse through the returned list and append attributes and operators in the list
 				#if they are not present for a particular constant
-				while True:
+				while len(whereElements) > 0:
 					if whereElementsIndex % 3 == 0:
 						if not self.isAttr(whereElements[whereElementsIndex]):
 							whereElements.insert(whereElementsIndex,defaultAttribute)
@@ -263,9 +259,24 @@ class NLP:
 
 					if whereElementsIndex >= len(whereElements):
 						break
-				print(whereList)
-				defaultAttribute = whereList[-4]
-				defaultOperator = whereList[-3]
+
+				# in case there is no constant present betweent startIndex and endIndex we wont be able to get 
+				# a default attribute and default operator from the whereList		
+				if len(whereList) > 0:
+					defaultAttribute = whereList[-4]
+					defaultOperator = whereList[-3]
+				# We're checking for common associations and appending the returned list to whereList
+				#whereCommonList = []
+				returnedCommonList = self.commonAssociation(startIndex + 1, endIndex)
+				#Traverse through the list and add default logical operator
+				for i in range(len(returnedCommonList)):
+					if i % 3 == 2:
+						whereList.append(returnedCommonList[i])
+						whereList.append(defaultLogicalOperator)
+					else:
+						whereList.append(returnedCommonList[i])						 
+				startIndex = endIndex
+
 
 			endIndex += 1
 			if endIndex >= len(self.constant_assoc):
@@ -275,9 +286,9 @@ class NLP:
 		returnedList = self.constantAssociation(startIndex + 1,endIndex)
 		whereElements = returnedList[1]
 		endIndex = returnedList[0]
-		startIndex = endIndex
+
 		whereElementsIndex = 0
-		while True:	
+		while len(whereElements) > 0:	
 			if whereElementsIndex % 3 == 0:
 				if not self.isAttr(whereElements[whereElementsIndex]):
 					whereElements.insert(whereElementsIndex,defaultAttribute)
@@ -294,7 +305,20 @@ class NLP:
 			whereElementsIndex += 1
 			if whereElementsIndex >= len(whereElements):
 				break
-		whereList.pop()
+		# We're checking for common associations and appending the returned list to whereList
+		whereCommonList = []
+		print('hi')
+		returnedCommonList = self.commonAssociation(startIndex + 1, endIndex)
+		#Traverse through the list and add default logical operator
+		for i in range(len(returnedCommonList)):
+			if i % 3 == 2:
+				whereList.append(returnedCommonList[i])
+				whereList.append(defaultLogicalOperator)
+			else:
+				whereList.append(returnedCommonList[i])						 
+		startIndex = endIndex
+		if len(whereList) > 0:
+			whereList.pop()
 		print (whereList)	
 							
 
