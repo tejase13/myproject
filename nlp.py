@@ -1,5 +1,5 @@
 #! /usr/bin/python3
-
+a
 import string
 import shelve,time
 from nltk.corpus import wordnet
