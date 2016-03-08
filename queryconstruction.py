@@ -49,10 +49,10 @@ class QueryConstruction:
 			if index == "*":
 				self.final_query += ">="
 
-			if index == "/":
+			elif index == "/":
 				self.final_query += "<="
 
-			if index == "!":
+			elif index == "!":
 				self.final_query += "!="
 
 			else:
