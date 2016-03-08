@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 
 from nlp import NLP
-
+from queryconstruction import QueryConstruction
 string ="Strength of project id 7"
 
 a = NLP(string)
@@ -19,7 +19,12 @@ a.andOr()
 a.unknownAttr()
 a.relationSearch()
 a.negationCheck()
-#print(a.SELECT)
+print(a.SELECT)
 print(a.FROM)
-print (a.WHERE)
+print(a.where_list)
 
+b = QueryConstruction(a.SELECT, a.FROM, a.where_list)
+
+b.constructSelectPart()
+b.constructFromPart()
+b.constructWherePart()
