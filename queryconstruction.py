@@ -46,7 +46,17 @@ class QueryConstruction:
 		self.final_query += "where "
 		
 		for index in self.where_list:
-			self.final_query += index
+			if index == "*":
+				self.final_query += ">="
+
+			if index == "/":
+				self.final_query += "<="
+
+			if index == "!":
+				self.final_query += "!="
+
+			else:
+				self.final_query += index
 			self.final_query += " "
 	
 		print (self.final_query)
