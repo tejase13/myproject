@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="Strength of project id 7"
+string ="find salary of manager of hr dept"
 
 a = NLP(string)
 a.replaceContractions()

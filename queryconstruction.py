@@ -45,18 +45,26 @@ class QueryConstruction:
 	def constructWherePart(self):
 		self.final_query += "where "
 		
-		for index in self.where_list:
-			if index == "*":
+		for index in range(len(self.where_list)):
+			if (index + 1) % 4 == 3:
+				if self.where_list[index].isdigit():
+					pass
+				else:
+					self.final_query += '\''
+					self.final_query += self.where_list[index]
+					self.final_query += '\''
+					
+			elif self.where_list[index] == "*":
 				self.final_query += ">="
 
-			elif index == "/":
+			elif self.where_list[index] == "/":
 				self.final_query += "<="
 
-			elif index == "!":
+			elif self.where_list[index] == "!":
 				self.final_query += "!="
 
 			else:
-				self.final_query += index
+				self.final_query += self.where_list[index]
 			self.final_query += " "
 	
 		print (self.final_query)
