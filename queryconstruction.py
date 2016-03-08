@@ -48,7 +48,7 @@ class QueryConstruction:
 		for index in range(len(self.where_list)):
 			if (index + 1) % 4 == 3:
 				if self.where_list[index].isdigit():
-					pass
+					self.final_query += self.where_list[index]	
 				else:
 					self.final_query += '\''
 					self.final_query += self.where_list[index]
