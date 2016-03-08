@@ -73,36 +73,37 @@ class NLP:
 			if word not in self.punct_list and word not in self.alpha_list and word not in self.stop_words:
 				self.keywords.append(word)
 
-	def replaceRelations(self):
-		self.keyword_copy = list(self.keywords)
-		length = len(self.keywords)
+	def replaceKeywordsWithEntity(self, keywords, entity):
+		self.keyword_copy = list(keywords)
+		length = len(keywords)
 		for index in range(length):
-			if self.keywords[index] in self.relations:
-				self.keyword_copy[index] = self.relations[self.keywords[index]]	
+			if keywords[index] in entity:
+				self.keyword_copy[index] = entity[keywords[index]]
+		return self.keyword_copy
+
+	def replaceRelations(self):
+		self.keyword_copy = self.replaceKeywordsWithEntity (self.keywords, self.relations)
 	
 	def replaceAttr(self):
-		length = len(self.keywords)
-		for index in range(length):
-			if self.keywords[index] in self.replace_attr:
-				self.keyword_copy[index] = self.replace_attr[self.keywords[index]]
+		self.keyword_copy = self.replaceKeywordsWithEntity (self.keywords, self.replace_attr)
 
 	def reconstruct(self):
 		self.lowercase_query = ' '.join(self.keyword_copy)
 
+	def replaceQueryTermWithEntity (self, query, entity):
+		for key in entity:
+			if query.find(key) != -1:
+				query = query.replace(key, entity[key])
+		return query
+
 	def replaceOperators(self):
-		for key in self.replace_operators:
-			if self.lowercase_query.find(key) != -1:
-				self.lowercase_query = self.lowercase_query.replace(key, self.replace_operators[key])
+		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.replace_operators)
 
 	def replaceSynAttr(self):
-		for key in self.syn_attr:
-			if self.lowercase_query.find(key) != -1:
-				self.lowercase_query = self.lowercase_query.replace(key, self.syn_attr[key])
+		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.syn_attr)
 	
 	def replaceSynCommon(self):
-		for key in self.syn_common:
-			if self.lowercase_query.find(key) != -1:
-				self.lowercase_query = self.lowercase_query.replace(key, self.syn_common[key])
+		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.syn_common)
 	
 	def operatorSearch(self, j, i):
 		for index in range(j,i):
@@ -110,8 +111,13 @@ class NLP:
 				return index
 		return None
 
+	def assignConstant (self, list, a, b, c):
+		list.append(a)
+		list.append(b)
+		list.append(c)
+
   	#Find all constants between startIndex and endIndex
-	def constantAssociation(self,startIndex,endIndex):
+	def constantAssociation(self, startIndex, endIndex):
 		#self.SELECT = []
 		#self.WHERE= {}
 		#self.FROM = {}
@@ -140,17 +146,14 @@ class NLP:
 							#search for operator between the position of attribute and constant
 							operator = self.operatorSearch(j,i)
 
-							if operator is None: #use default operator 
-								temp_list.append(self.constant_assoc[j])
-								temp_list.append(defaultOperator)
-								temp_list.append(self.constant_assoc[i])
+							if operator is None: #use default operator
+								self.assignConstant(temp_list, self.constant_assoc[j], defaultOperator, self.constant_assoc[i])
+								print (temp_list)
 								self.constant_assoc.remove(self.constant_assoc[i])
 								counter += 1
 
 							else:
-								temp_list.append(self.constant_assoc[j])
-								temp_list.append(self.constant_assoc[operator])
-								temp_list.append(self.constant_assoc[i])
+								self.assignConstant(temp_list, self.constant_assoc[j], self.constant_assoc[operator], self.constant_assoc[i])
 								defaultOperator = self.constant_assoc[operator] 
 								self.constant_assoc.remove(self.constant_assoc[i])
 								self.constant_assoc.remove(self.constant_assoc[operator])
@@ -196,10 +199,8 @@ class NLP:
 				if self.lowercase_query.find(key) != -1:
 					match = True
 					# similar implementation to the above method dealing with duplicates in FROM dictionary
-					temp_list.append(self.common_attr[key])
-					temp_list.append('=')
-					temp_list.append(key)
-					self.lowercase_query = self.lowercase_query.replace(key,'')
+					self.assignConstant(temp_list, self.common_attr[key], '=', key)
+					self.lowercase_query = self.lowercase_query.replace(key, '')
 
 			if match is False:
 				break
@@ -216,6 +217,27 @@ class NLP:
 			return True
 		return False
 
+	#traverse through the returned list and append attributes and operators in the list
+	#if they are not present for a particular constant
+	def assignEntity (self, whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex):
+		while len(whereElements) > 0:
+				if whereElementsIndex % 3 == 0:
+					if not self.isAttr(whereElements[whereElementsIndex]):
+							whereElements.insert(whereElementsIndex,defaultAttribute)
+						whereList.append(whereElements[whereElementsIndex])
+
+					if whereElementsIndex % 3 == 1:
+						if not self.isOper(whereElements[whereElementsIndex]):
+							whereElements.insert(whereElementsIndex,defaultOperator)
+						whereList.append(whereElements[whereElementsIndex])
+
+					if whereElementsIndex % 3 == 2:
+						whereList.append(whereElements[whereElementsIndex])
+						whereList.append(self.constant_assoc[endIndex])
+					whereElementsIndex += 1
+
+					if whereElementsIndex >= len(whereElements):
+						break
 
 	def andOr(self):
 		self.constant_assoc = self.lowercase_query.split(' ')
@@ -241,26 +263,9 @@ class NLP:
 
 				#traverse through the returned list and append attributes and operators in the list
 				#if they are not present for a particular constant
-				while len(whereElements) > 0:
-					if whereElementsIndex % 3 == 0:
-						if not self.isAttr(whereElements[whereElementsIndex]):
-							whereElements.insert(whereElementsIndex,defaultAttribute)
-						whereList.append(whereElements[whereElementsIndex])
+				self.assignEntity (whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex)
 
-					if whereElementsIndex % 3 == 1:
-						if not self.isOper(whereElements[whereElementsIndex]):
-							whereElements.insert(whereElementsIndex,defaultOperator)
-						whereList.append(whereElements[whereElementsIndex])
-
-					if whereElementsIndex % 3 == 2: 
-						whereList.append(whereElements[whereElementsIndex])
-						whereList.append(self.constant_assoc[endIndex])
-					whereElementsIndex += 1
-
-					if whereElementsIndex >= len(whereElements):
-						break
-
-				# in case there is no constant present betweent startIndex and endIndex we wont be able to get 
+				# in case there is no constant present between startIndex and endIndex we won't be able to get
 				# a default attribute and default operator from the whereList		
 				if len(whereList) > 0:
 					defaultAttribute = whereList[-4]
@@ -288,23 +293,8 @@ class NLP:
 		endIndex = returnedList[0]
 
 		whereElementsIndex = 0
-		while len(whereElements) > 0:	
-			if whereElementsIndex % 3 == 0:
-				if not self.isAttr(whereElements[whereElementsIndex]):
-					whereElements.insert(whereElementsIndex,defaultAttribute)
-				whereList.append(whereElements[whereElementsIndex])
+		self.assignEntity (whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex)
 
-			if whereElementsIndex % 3 == 1:
-				if not self.isOper(whereElements[whereElementsIndex]):
-					whereElements.insert(whereElementsIndex,defaultOperator)
-				whereList.append(whereElements[whereElementsIndex])
-
-			if whereElementsIndex % 3 == 2: 
-				whereList.append(whereElements[whereElementsIndex])
-				whereList.append(defaultLogicalOperator)
-			whereElementsIndex += 1
-			if whereElementsIndex >= len(whereElements):
-				break
 		# We're checking for common associations and appending the returned list to whereList
 		whereCommonList = []
 		print('hi')
