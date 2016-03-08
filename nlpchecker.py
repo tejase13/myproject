@@ -2,7 +2,7 @@
 
 from nlp import NLP
 
-string ="eid who works in dept id 5,4,3 and is a manager"
+string ="Strength of project id 7"
 
 a = NLP(string)
 a.replaceContractions()
@@ -19,7 +19,7 @@ a.andOr()
 a.unknownAttr()
 a.relationSearch()
 a.negationCheck()
-print(a.SELECT)
+#print(a.SELECT)
 print(a.FROM)
 print (a.WHERE)
 

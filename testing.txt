@@ -4,3 +4,5 @@ empid where eid is 2 or 5 and greater than 4
 name of the employee where eid greater than 10 or less than equal to 25
 employee salary where eid greater than 9 or deptid not equal 33 and project id lesser equal than 28
 empname, dept id where eid greater than 15 or less than 20
+
+Find the name and salary of eid 13

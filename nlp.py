@@ -116,45 +116,45 @@ class NLP:
 		list.append(b)
 		list.append(c)
 
-  	#Find all constants between startIndex and endIndex
-	def constantAssociation(self, startIndex, endIndex):
-		#self.SELECT = []
+  	#Find all constants between self.start_index and self.end_index
+	def constantAssociation(self, start_index, end_index):
+		self.SELECT = []
 		#self.WHERE= {}
-		#self.FROM = {}
+		self.FROM = {}
 		#self.constant_assoc = self.lowercase_query.split(' ')
-		print(startIndex)
-		print(endIndex)
+		print(start_index)
+		print(end_index)
 
 		#temp_list stores all where clause elements in the form attr,operator,constant
 		temp_list = []
 
-		#counter is used to shift the endIndex due to removal of operators and constants
+		#counter is used to shift the end_index due to removal of operators and constants
 		#stores number of elements removed in each iteration
 		counter = 0
-		defaultOperator = "="
+		self.default_operator = "="
 
 		while True:
 			match = False
-			for i in range(startIndex,endIndex):
+			for i in range(start_index,end_index):
 				#if constant is found
 				if self.constant_assoc[i].isdigit():
 					j = i 
 					match = True
-					while j >= startIndex:
+					while j >= start_index:
 						#if attribute is found
 						if self.constant_assoc[j] in self.attr_relations:
 							#search for operator between the position of attribute and constant
 							operator = self.operatorSearch(j,i)
 
 							if operator is None: #use default operator
-								self.assignConstant(temp_list, self.constant_assoc[j], defaultOperator, self.constant_assoc[i])
+								self.assignConstant(temp_list, self.constant_assoc[j], self.default_operator, self.constant_assoc[i])
 								print (temp_list)
 								self.constant_assoc.remove(self.constant_assoc[i])
 								counter += 1
 
 							else:
 								self.assignConstant(temp_list, self.constant_assoc[j], self.constant_assoc[operator], self.constant_assoc[i])
-								defaultOperator = self.constant_assoc[operator] 
+								self.default_operator = self.constant_assoc[operator] 
 								self.constant_assoc.remove(self.constant_assoc[i])
 								self.constant_assoc.remove(self.constant_assoc[operator])
 								counter += 2
@@ -162,8 +162,8 @@ class NLP:
 						j = j - 1
 
 					#if no attribute found
-					if j < startIndex:
-						operator = self.operatorSearch(startIndex,i)
+					if j < start_index:
+						operator = self.operatorSearch(start_index,i)
 						if operator is not None:
 							temp_list.append(self.constant_assoc[operator])
 							counter += 1
@@ -178,19 +178,19 @@ class NLP:
 			if match is False:
 				break
 
-			endIndex = endIndex - counter
+			end_index = end_index - counter
 			counter = 0
 
 		print(temp_list)
 
-		#return new endIndex and the list with all the elements
-		return [endIndex, temp_list]	
+		#return new end_index and the list with all the elements
+		return [end_index, temp_list]	
 
 	
-	def commonAssociation(self, startIndex, endIndex):
-		print(startIndex)
-		print(endIndex)
-		self.lowercase_query = ' '.join(self.constant_assoc[startIndex : endIndex])
+	def commonAssociation(self, start_index, end_index):
+		print(start_index)
+		print(end_index)
+		self.lowercase_query = ' '.join(self.constant_assoc[start_index : end_index])
 		print(self.lowercase_query)
 		temp_list = []
 		while True:
@@ -219,102 +219,107 @@ class NLP:
 
 	#traverse through the returned list and append attributes and operators in the list
 	#if they are not present for a particular constant
-	def assignEntity (self, whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex):
-		while len(whereElements) > 0:
-				if whereElementsIndex % 3 == 0:
-					if not self.isAttr(whereElements[whereElementsIndex]):
-							whereElements.insert(whereElementsIndex,defaultAttribute)
-						whereList.append(whereElements[whereElementsIndex])
+	def assignEntity (self):
+		print(self.where_elements)
+		while len(self.where_elements) > 0:
+			if self.where_elementsIndex % 3 == 0:
+				if not self.isAttr(self.where_elements[self.where_elementsIndex]):
+					self.where_elements.insert(self.where_elementsIndex,self.default_attribute)
+				self.where_list.append(self.where_elements[self.where_elementsIndex])
 
-					if whereElementsIndex % 3 == 1:
-						if not self.isOper(whereElements[whereElementsIndex]):
-							whereElements.insert(whereElementsIndex,defaultOperator)
-						whereList.append(whereElements[whereElementsIndex])
+			if self.where_elementsIndex % 3 == 1:
+				if not self.isOper(self.where_elements[self.where_elementsIndex]):
+					self.where_elements.insert(self.where_elementsIndex,self.default_operator)
+				self.where_list.append(self.where_elements[self.where_elementsIndex])
 
-					if whereElementsIndex % 3 == 2:
-						whereList.append(whereElements[whereElementsIndex])
-						whereList.append(self.constant_assoc[endIndex])
-					whereElementsIndex += 1
+			if self.where_elementsIndex % 3 == 2:
+				self.where_list.append(self.where_elements[self.where_elementsIndex])
+				if self.end_index < len(self.constant_assoc):
+					self.where_list.append(self.constant_assoc[self.end_index])
+				else:
+					self.where_list.append(self.default_logical_operator)
+			self.where_elementsIndex += 1
 
-					if whereElementsIndex >= len(whereElements):
-						break
+			if self.where_elementsIndex >= len(self.where_elements):
+				break
 
 	def andOr(self):
 		self.constant_assoc = self.lowercase_query.split(' ')
 		print(self.constant_assoc)
 
 		#a list with all elements of where clause along with their and/or conjunctions
-		whereList = []
-		startIndex = -1 
-		endIndex = 0
-		defaultOperator = ""
-		defaultAttribute = ""
-		defaultLogicalOperator = "and"
+		self.where_list = []
+		self.start_index = -1 
+		self.end_index = 0
+		self.default_operator = ""
+		self.default_attribute = ""
+		self.default_logical_operator = "and"
 
 		#searches for and/or and finds constants and attributes before them
 		while True:
-			if self.constant_assoc[endIndex] == "and" or self.constant_assoc[endIndex] == "or":
-				defaultLogicalOperator = self.constant_assoc[endIndex]
-				returnedList = self.constantAssociation(startIndex + 1,endIndex)
+			if self.constant_assoc[self.end_index] == "and" or self.constant_assoc[self.end_index] == "or":
+				self.default_logical_operator = self.constant_assoc[self.end_index]
+				self.returned_list = self.constantAssociation(self.start_index + 1,self.end_index)
 
-				whereElements = returnedList[1]
-				endIndex = returnedList[0]
-				whereElementsIndex = 0
+				self.where_elements = self.returned_list[1]
+				self.end_index = self.returned_list[0]
+				self.where_elementsIndex = 0
 
 				#traverse through the returned list and append attributes and operators in the list
 				#if they are not present for a particular constant
-				self.assignEntity (whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex)
+				self.assignEntity ()
 
-				# in case there is no constant present between startIndex and endIndex we won't be able to get
-				# a default attribute and default operator from the whereList		
-				if len(whereList) > 0:
-					defaultAttribute = whereList[-4]
-					defaultOperator = whereList[-3]
-				# We're checking for common associations and appending the returned list to whereList
-				#whereCommonList = []
-				returnedCommonList = self.commonAssociation(startIndex + 1, endIndex)
+				# in case there is no constant present between self.start_index and self.end_index we won't be able to get
+				# a default attribute and default operator from the self.where_list		
+				if len(self.where_list) > 0:
+					self.default_attribute = self.where_list[-4]
+					self.default_operator = self.where_list[-3]
+				# We're checking for common associations and appending the returned list to self.where_list
+				#self.where_common_list = []
+				self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
 				#Traverse through the list and add default logical operator
-				for i in range(len(returnedCommonList)):
+				for i in range(len(self.returned_common_list)):
 					if i % 3 == 2:
-						whereList.append(returnedCommonList[i])
-						whereList.append(defaultLogicalOperator)
+						self.where_list.append(self.returned_common_list[i])
+						self.where_list.append(self.default_logical_operator)
 					else:
-						whereList.append(returnedCommonList[i])						 
-				startIndex = endIndex
+						self.where_list.append(self.returned_common_list[i])						 
+				self.start_index = self.end_index
 
 
-			endIndex += 1
-			if endIndex >= len(self.constant_assoc):
+			self.end_index += 1
+			if self.end_index >= len(self.constant_assoc):
 					break
 
 		#search again when the end of list is reached
-		returnedList = self.constantAssociation(startIndex + 1,endIndex)
-		whereElements = returnedList[1]
-		endIndex = returnedList[0]
+		self.returned_list = self.constantAssociation(self.start_index + 1,self.end_index)
+		self.where_elements = self.returned_list[1]
+		self.end_index = self.returned_list[0]
 
-		whereElementsIndex = 0
-		self.assignEntity (whereList, whereElements, whereElementsIndex, defaultAttribute, defaultOperator, endIndex)
+		self.where_elementsIndex = 0
+		self.assignEntity ()
 
-		# We're checking for common associations and appending the returned list to whereList
-		whereCommonList = []
+		# We're checking for common associations and appending the returned list to self.where_list
+		self.where_common_list = []
 		print('hi')
-		returnedCommonList = self.commonAssociation(startIndex + 1, endIndex)
+		self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
 		#Traverse through the list and add default logical operator
-		for i in range(len(returnedCommonList)):
+		for i in range(len(self.returned_common_list)):
 			if i % 3 == 2:
-				whereList.append(returnedCommonList[i])
-				whereList.append(defaultLogicalOperator)
+				self.where_list.append(self.returned_common_list[i])
+				self.where_list.append(self.default_logical_operator)
 			else:
-				whereList.append(returnedCommonList[i])						 
-		startIndex = endIndex
-		if len(whereList) > 0:
-			whereList.pop()
-		print (whereList)	
+				self.where_list.append(self.returned_common_list[i])						 
+		self.start_index = self.end_index
+		if len(self.where_list) > 0:
+			self.where_list.pop()
+		print (self.where_list)	
 							
 
 
 	def unknownAttr(self):
-		self.constant_assoc = self.lowercase_query.split(' ')
+		#self.constant_assoc = self.lowercase_query.split(' ')
+		print("Unknown attr ",self.constant_assoc)
 		for index in self.constant_assoc:
 			if index in self.attr_relations:
 				rel = self.attr_relations[index]
@@ -325,6 +330,7 @@ class NLP:
 						self.FROM[value] = 1
 				if index not in self.SELECT: # if unknown attribute does not already exist in select list then append
 					self.SELECT.append(index)
+		print("Select list:",self.SELECT)
 
 
 	#searching the remaining keywords for relations
