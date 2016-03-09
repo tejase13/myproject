@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="find salary of manager of department id greater than or equal to 8"
+string ="list all projects"
 
 a = NLP(string)
 a.replaceContractions()
@@ -28,3 +28,5 @@ b = QueryConstruction(a.SELECT, a.FROM, a.where_list)
 b.constructSelectPart()
 b.constructFromPart()
 b.constructWherePart()
+
+print(b.final_query)

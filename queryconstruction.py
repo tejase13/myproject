@@ -43,8 +43,11 @@ class QueryConstruction:
 
 
 	def constructWherePart(self):
+
+		if len(self.where_list) == 0:
+			return
+
 		self.final_query += "where "
-		
 		for index in range(len(self.where_list)):
 			if (index + 1) % 4 == 3:
 				if self.where_list[index].isdigit():
@@ -67,5 +70,4 @@ class QueryConstruction:
 				self.final_query += self.where_list[index]
 			self.final_query += " "
 	
-		print (self.final_query)
 
