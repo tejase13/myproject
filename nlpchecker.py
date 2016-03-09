@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="list all departments"
+string ="Employee names who don't work in department id 5"
 
 a = NLP(string)
 a.replaceContractions()

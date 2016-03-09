@@ -349,10 +349,8 @@ class NLP:
 			if index == 'not':
 				bool = True
 				break
-		if bool:
-			for key in self.WHERE:
-				val_list = self.WHERE[key]
-				index = 0
-				while index < len(val_list):
-					val_list[index] = self.ant_operators[val_list[index]]
-					index += 2
+		if bool and len(self.where_list) > 0:
+			for index in range(len(self.where_list)):
+				if (index + 1) % 4 == 2:
+					self.where_list[index] = self.ant_operators[self.where_list[index]]
+		
