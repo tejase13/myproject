@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="find salary of manager of hr dept"
+string ="find salary of manager of department id greater than or equal to 8"
 
 a = NLP(string)
 a.replaceContractions()
