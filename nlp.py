@@ -74,19 +74,19 @@ class NLP:
 				self.keywords.append(word)
 
 	def replaceKeywordsWithEntity(self, keywords, entity):
-		self.keyword_copy = list(keywords)
+		keyword_copy = list(keywords)
 		length = len(keywords)
 		for index in range(length):
 			if keywords[index] in entity:
-				self.keyword_copy[index] = entity[keywords[index]]
-		return self.keyword_copy
+				keyword_copy[index] = entity[keywords[index]]
+		return keyword_copy
 
 	def replaceRelations(self):
 		self.keyword_copy = self.replaceKeywordsWithEntity (self.keywords, self.relations)
-	
-	def replaceAttr(self):
-		self.keyword_copy = self.replaceKeywordsWithEntity (self.keywords, self.replace_attr)
 
+	def replaceAttr(self):
+		self.keyword_copy = self.replaceKeywordsWithEntity (self.keyword_copy, self.replace_attr)
+	
 	def reconstruct(self):
 		self.lowercase_query = ' '.join(self.keyword_copy)
 
