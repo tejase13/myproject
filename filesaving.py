@@ -41,6 +41,11 @@ replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', 
 replace_operators = collections.OrderedDict(replace_operators)
 ant_operators = {'=':'!','!':'=','/':'>','>':'/','*':'<','<':'*'}
 operator_list = ['=','!','/','>','<','*']
+
+syn_aggregate = (('max','max'), ('maximum','max'), ('greatest','max'), ('most','max'), ('largest','max'), ('least','min'), ('min','min'), ('minimum','min'), ('smallest','min'), ('average','avg'), ('avg','avg'), ('mean','avg'), ('total number','count'), ('number','count'), ('count','count'), ('sum','sum'), ('total','sum'), ('summation','sum'), ('add','sum'), ('net','sum'))
+
+syn_aggregate = collections.OrderedDict(syn_aggregate)
+aggregate_list = ['max', 'min', 'avg', 'sum', 'count']
 replace_contractions = { 
 "aini\'t": "am not",
 "aren\'t": "are not",
@@ -178,4 +183,6 @@ conf['replace_contractions'] = replace_contractions
 conf['replace_operators'] = replace_operators
 conf['ant_operators'] = ant_operators
 conf['operator_list'] = operator_list
+conf['syn_aggregate'] = syn_aggregate
+conf['aggregate_list'] = aggregate_list
 conf.close()

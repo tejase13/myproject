@@ -22,6 +22,8 @@ class NLP:
 		self.replace_operators = conf['replace_operators']
 		self.operator_list = conf['operator_list']
 		self.ant_operators = conf['ant_operators']
+		self.syn_aggregate = conf['syn_aggregate']
+		self.aggregate_list = conf['aggregate_list']
 
 		#Original Query	
 		self.original_query = query
@@ -315,23 +317,80 @@ class NLP:
 			self.where_list.pop()
 		print (self.where_list)	
 							
+	
+	def backwardSearch(self, start_index, end_index):
+		index = end_index - 1
+		s = self.constant_assoc[end_index]
+		match = False	
+		while index >= start_index:
+			if self.constant_assoc[index] in self.operator_list:
+				print(self.constant_assoc[index])
+				i = index - 1
+				print(i)
+				while i >= start_index:
+					if self.isAttr(self.constant_assoc[i]):
+						s = s + '(' + self.constant_assoc[i] + ')'
+						rel = self.attr_relations[self.constant_assoc[i]] 
+						for j in rel:
+							if j in self.FROM:
+								self.FROM[j] += 1
+							else:
+								self.FROM[j] = 1
+						match = True
+						break
+					i = i - 1
 
+			if match is True:
+				break
+			index = index - 1
+		print(s)
+		if match is True:
+			self.SELECT.append(s)
+		return match
+
+	def forwardSearch(self, start_index, end_index):
+		print('hi')
+		s = self.constant_assoc[start_index]
+		for index in range(start_index + 1, end_index):
+			if self.isAttr(self.constant_assoc[index]):
+				s = s + '(' + self.constant_assoc[index] + ')'
+				rel = self.attr_relations[self.constant_assoc[index]]
+				for i in rel:
+					if i in self.FROM:
+						self.FROM[i] += 1
+					else:
+						self.FROM[i] = 1
+				break
+		self.SELECT.append(s)
 
 	def unknownAttr(self):
 		#self.constant_assoc = self.lowercase_query.split(' ')
 		print("Unknown attr ",self.constant_assoc)
-		for index in self.constant_assoc:
-			if index in self.attr_relations:
-				rel = self.attr_relations[index]
-				for value in rel:
-					if value in self.FROM:
-						self.FROM[value] += 1
-					else:
-						self.FROM[value] = 1
-				if index not in self.SELECT: # if unknown attribute does not already exist in select list then append
-					self.SELECT.append(index)
-		print("Select list:",self.SELECT)
+		lowercase_query = ' ' .join(self.constant_assoc)
+		lowercase_query = self.replaceQueryTermWithEntity(lowercase_query, self.syn_aggregate)
+		self.constant_assoc = lowercase_query.split(' ')
+		start_index = 0
+		end_index = 0
+		for index in range(len(self.constant_assoc)):
+			if self.constant_assoc[index] in self.aggregate_list and self.constant_assoc[index] != 'count':
+				end_index = index
+				result = self.backwardSearch(start_index, end_index)
+				print(result)
+				if result:
+					start_index = end_index + 1
+					continue
 
+				else:
+					self.forwardSearch(end_index, len(self.constant_assoc)) 
+					start_index = end_index + 1
+
+			elif self.constant_assoc[index] == 'count':
+				str = 'count(*)'
+				self.SELECT.append(str)
+				start_index = index + 1
+
+
+		print("Select list:",self.SELECT)
 
 	#searching the remaining keywords for relations
 	def relationSearch(self):
@@ -346,7 +405,7 @@ class NLP:
 	def negationCheck(self):
 		bool = False
 		for index in self.constant_assoc:
-			if index == 'not':
+			if index == 'not': 
 				bool = True
 				break
 		if bool and len(self.where_list) > 0:

@@ -14,3 +14,4 @@ employee name where salary is greater than 5000 and less than 75000 and works in
 Salary of manager who works in HR or sales department--(Mapped an extra 'or' instead of 'and')
 Employee ids working in sales department--(Tried join to see the result)
 Find the employee name and salary of eid 10 and pid 15--Y
+hi
