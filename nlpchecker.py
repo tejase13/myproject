@@ -25,12 +25,15 @@ for string in queries:
 	print(a.SELECT)
 	print(a.FROM)
 	print(a.where_list)
+        #print("Unique relation ",a.unique_attribute_relation)
+        #print("Common relation ",a.common_attribute_relation)
+	b = QueryConstruction(a.SELECT, a.FROM, a.where_list, a.unique_attribute_relation)
 
-	b = QueryConstruction(a.SELECT, a.FROM, a.where_list)
-
+	b.checkJoin()
 	b.constructSelectPart()
 	b.constructFromPart()
 	b.constructWherePart()
 
 	print(b.final_query)
 	output.write(b.final_query + '\n')
+output.close()

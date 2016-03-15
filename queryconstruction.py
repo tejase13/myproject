@@ -1,12 +1,16 @@
 #! /usr/bin/python3
-
+import shelve,time
 
 class QueryConstruction:
 	
-	def __init__ (self, select_list, from_list, where_list):
+	def __init__ (self, select_list, from_list, where_list, unique_attribute_relation):
+		conf = shelve.open('conf')
+		self.attr_relations = conf['attr_relations']
+		self.relations_attr = conf['relations_attr']
 		self.select_list = select_list
 		self.from_list = from_list
 		self.where_list = where_list
+		self.unique_attribute_relation = unique_attribute_relation
 
 		self.final_query = ""
 
@@ -24,22 +28,42 @@ class QueryConstruction:
 
 			self.final_query += " "
 
+	def checkJoin(self):
+		if len(self.unique_attribute_relation) > 1:
+			self.select_list = []
+			
+			for key in self.attr_relations:
+				flag = True
+				rel = self.attr_relations[key]
+				if len(rel) > 1:
+					for element in rel:
+						if element not in self.unique_attribute_relation:
+							flag = False
+							break
+				else:
+					flag = False
 
-	def getMaxKey(self):
-		maxValue = 0
-		maxKey = None 
-		for key in self.from_list:
-			if self.from_list[key] > maxValue:
-				maxValue = self.from_list[key] 
-				maxKey = key
+				if flag is True:
+					self.where_list.append('and')
+					for element in rel:
+						print("key=",key," element=",element)
+						where_key = element
+						where_key += "."
+						where_key += self.relations_attr[element][key]
+						self.where_list.append(where_key)
+						self.where_list.append ("=")
+					self.where_list.pop(-1)	
+					print("where list", self.where_list)
 
-		return maxKey
+
+
 	def constructFromPart(self):
 		self.final_query += "from "
 		
-		relation = self.getMaxKey()
-		self.final_query += relation
-		self.final_query += " "
+		for index in range(len(self.unique_attribute_relation)):
+			self.final_query += self.unique_attribute_relation[index]
+			if index < len(self.unique_attribute_relation) - 1:
+				self.final_query += ","
 
 
 	def constructWherePart(self):
@@ -47,7 +71,7 @@ class QueryConstruction:
 		if len(self.where_list) == 0:
 			return
 
-		self.final_query += "where "
+		self.final_query += " where "
 		for index in range(len(self.where_list)):
 			if (index + 1) % 4 == 3:
 				if self.where_list[index].isdigit():

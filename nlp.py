@@ -147,6 +147,15 @@ class NLP:
 						if self.constant_assoc[j] in self.attr_relations:
 							#search for operator between the position of attribute and constant
 							operator = self.operatorSearch(j,i)
+							#Appending to unique or common attribute relation list
+							rel = self.attr_relations[self.constant_assoc[j]]
+							if len(rel) == 1:
+								if rel[0] not in self.unique_attribute_relation:
+									self.unique_attribute_relation.append(rel[0])
+							else:
+								for element in rel:						
+									if  element not in self.common_attribute_relation:
+										self.common_attribute_relation.append(element)
 
 							if operator is None: #use default operator
 								self.assignConstant(temp_list, self.constant_assoc[j], self.default_operator, self.constant_assoc[i])
@@ -203,6 +212,16 @@ class NLP:
 					# similar implementation to the above method dealing with duplicates in FROM dictionary
 					self.assignConstant(temp_list, self.common_attr[key], '=', key)
 					self.lowercase_query = self.lowercase_query.replace(key, '')
+					#Appending to unique or common attribute relation list
+					rel = self.attr_relations[self.common_attr[key]]
+					if len(rel) == 1:
+						if rel[0] not in self.unique_attribute_relation:
+							self.unique_attribute_relation.append(rel[0])
+					else:
+						for element in rel:
+							if  element not in self.common_attribute_relation:
+								self.common_attribute_relation.append(element)
+					
 
 			if match is False:
 				break
@@ -256,6 +275,9 @@ class NLP:
 		self.default_operator = ""
 		self.default_attribute = ""
 		self.default_logical_operator = "and"
+		#Stores relations with unique attr in one list and relations with common attr in the other
+		self.unique_attribute_relation = []
+		self.common_attribute_relation = []
 
 		#searches for and/or and finds constants and attributes before them
 		while True:
@@ -329,6 +351,16 @@ class NLP:
 				print(i)
 				while i >= start_index:
 					if self.isAttr(self.constant_assoc[i]):
+						#Appending to unique or common attribute relation list
+						rel = self.attr_relations[self.constant_assoc[i]]
+						if len(rel) == 1:
+							if rel[0] not in self.unique_attribute_relation:
+								self.unique_attribute_relation.append(rel[0])
+						else:
+							for element in rel:
+								if  element not in self.common_attribute_relation:
+									self.common_attribute_relation.append(element)
+						#Stores index for removal of aggr attribute
 						if i not in self.remove_list:
 							self.remove_list.append(i)
 						s = s + '(' + self.constant_assoc[i] + ')'
@@ -355,6 +387,16 @@ class NLP:
 		s = self.constant_assoc[start_index]
 		for index in range(start_index + 1, end_index):
 			if self.isAttr(self.constant_assoc[index]):
+				#Appending to unique or common attribute relation list
+				rel = self.attr_relations[self.constant_assoc[index]]
+				if len(rel) == 1:
+					if rel[0] not in self.unique_attribute_relation:
+						self.unique_attribute_relation.append(rel[0])
+				else:
+					for element in rel:
+						if  element not in self.common_attribute_relation:
+							self.common_attribute_relation.append(element)
+				
 				if index not in self.remove_list:
 					self.remove_list.append(index)
 				s = s + '(' + self.constant_assoc[index] + ')'
@@ -401,9 +443,19 @@ class NLP:
 			self.constant_assoc.pop(self.remove_list[index])	
 			index = index - 1
 
+		# Non aggregate attributes
 		print(self.constant_assoc)
 		for index in self.constant_assoc:
 			if self.isAttr(index):
+				#Appending to unique or common attribute relation list
+				rel = self.attr_relations[index]
+				if len(rel) == 1:
+					if rel[0] not in self.unique_attribute_relation:
+						self.unique_attribute_relation.append(rel[0])
+				else:
+					for element in rel:
+						if  element not in self.common_attribute_relation:
+							self.common_attribute_relation.append(element)
 				self.SELECT.append(index)
 				rel = self.attr_relations[index]
 				for i in rel:
@@ -413,14 +465,15 @@ class NLP:
 						self.FROM[i] = 1
 		print("Select list:",self.SELECT)
 
+
 	#searching the remaining keywords for relations
 	def relationSearch(self):
 		for index in self.constant_assoc:
 			if index in self.relations:
-				if index in self.FROM:
-					self.FROM[index] += 1
-				else:
-					self.FROM[index] = 1
+				if index not in self.unique_attribute_relation:
+					self.unique_attribute_relation.append(index)
+		print ("Unique relation",self.unique_attribute_relation)
+		print ("Common relation",self.common_attribute_relation)
 					
 
 	def negationCheck(self):
