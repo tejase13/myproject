@@ -15,3 +15,4 @@ Salary of manager who works in HR or sales department--(Mapped an extra 'or' ins
 Employee ids working in sales department--(Tried join to see the result)
 Find the employee name and salary of eid 10 and pid 15--Y
 hi
+Biggest project in terms of workforce -- Y

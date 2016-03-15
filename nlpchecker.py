@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="what is the department id of employee whose id is 4"
+string ="Biggest and smallest project in terms of workforce"
 
 a = NLP(string)
 a.replaceContractions()
