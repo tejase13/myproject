@@ -2,7 +2,7 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-string ="find the empname whose salary is maximum and also avg salary of all employees"
+string ="what is the department id of employee whose id is 4"
 
 a = NLP(string)
 a.replaceContractions()

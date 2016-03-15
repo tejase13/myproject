@@ -329,6 +329,8 @@ class NLP:
 				print(i)
 				while i >= start_index:
 					if self.isAttr(self.constant_assoc[i]):
+						if i not in self.remove_list:
+							self.remove_list.append(i)
 						s = s + '(' + self.constant_assoc[i] + ')'
 						rel = self.attr_relations[self.constant_assoc[i]] 
 						for j in rel:
@@ -353,6 +355,8 @@ class NLP:
 		s = self.constant_assoc[start_index]
 		for index in range(start_index + 1, end_index):
 			if self.isAttr(self.constant_assoc[index]):
+				if index not in self.remove_list:
+					self.remove_list.append(index)
 				s = s + '(' + self.constant_assoc[index] + ')'
 				rel = self.attr_relations[self.constant_assoc[index]]
 				for i in rel:
@@ -369,6 +373,7 @@ class NLP:
 		lowercase_query = ' ' .join(self.constant_assoc)
 		lowercase_query = self.replaceQueryTermWithEntity(lowercase_query, self.syn_aggregate)
 		self.constant_assoc = lowercase_query.split(' ')
+		self.remove_list = []
 		start_index = 0
 		end_index = 0
 		for index in range(len(self.constant_assoc)):
@@ -388,8 +393,24 @@ class NLP:
 				str = 'count(*)'
 				self.SELECT.append(str)
 				start_index = index + 1
+		
+		
+		self.remove_list.sort()
+		index = len(self.remove_list) - 1
+		while index >= 0:
+			self.constant_assoc.pop(self.remove_list[index])	
+			index = index - 1
 
-
+		print(self.constant_assoc)
+		for index in self.constant_assoc:
+			if self.isAttr(index):
+				self.SELECT.append(index)
+				rel = self.attr_relations[index]
+				for i in rel:
+					if i in self.FROM:
+						self.FROM[i] += 1
+					else:
+						self.FROM[i] = 1
 		print("Select list:",self.SELECT)
 
 	#searching the remaining keywords for relations
