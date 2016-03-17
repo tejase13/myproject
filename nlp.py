@@ -338,7 +338,7 @@ class NLP:
 		if len(self.where_list) > 0:
 			self.where_list.pop()
 		print (self.where_list)	
-							
+
 	
 	def backwardSearch(self, start_index, end_index):
 		index = end_index - 1
@@ -456,7 +456,8 @@ class NLP:
 					for element in rel:
 						if  element not in self.common_attribute_relation:
 							self.common_attribute_relation.append(element)
-				self.SELECT.append(index)
+				if index not in self.SELECT:
+					self.SELECT.append(index)
 				rel = self.attr_relations[index]
 				for i in rel:
 					if i in self.FROM:

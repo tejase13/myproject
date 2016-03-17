@@ -16,5 +16,8 @@ Find the employee name and salary of eid 10 and pid 15--Y
 Biggest project in terms of workforce -- 
 Employee with eid 3 belongs to which department name
 Employee with eid 3 belongs to which department
-Project name in which eid 10 works
+Project name in which eid 10 works and project id greater than 3
 Employee id 15 reports to which HOD
+department id of hr department
+department name where department id is 5
+project name and project id where project id is 4

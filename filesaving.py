@@ -34,8 +34,9 @@ syn_common = {'hr':'hr','human resources':'hr','marketing':'marketing','sales':'
 common_attr = { 'hr':'dname','marketing':'dname','sales':'dname','finance':'dname','it':'dname','manager':'post','lead':'post','developer':'post','salesrep':'post'}
 
 
-relations_attr = {'employee':{'eid':'eid','did':'did','salary':'salary','post':'post','phone':'phone','pid':'pid'}, 'department':{'did':'deptid','dname':'dname','hod':'hod'}, 'project':{'pid':'projid','pname':'pname','pstrength':'pstrength'}}
+relations_attr = {'employee':{'ename':'ename','eid':'eid','did':'did','salary':'salary','post':'post','phone':'phone','pid':'pid'}, 'department':{'did':'deptid','dname':'dname','hod':'hod'}, 'project':{'pid':'projid','pname':'pname','pstrength':'pstrength'}}
 
+attr_datatype = {'eid':'int', 'did': 'int', 'salary':'int', 'post':'varchar', 'phone':'int', 'pid':'int','ename':'varchar', 'deptid':'int','dname':'varchar', 'hod':'varchar', 'projid':'int', 'pname':'varchar', 'pstrength':'int'}
 replace_operators = (('>=', '*'), ('greater equal', '*'), ('greater and equal', '*'), ('greater or equal', '*'), ('higher and equal', '*'), ('higher or equal', '*'),('more','>'),('more or equal','*'),('more and equal','*'),('more equal','*'), ('>', '>'), ('greater', '>'), ('higher', '>'),('more', '>'), ('<=', '/'), ('less equal', '/'), ('lesser and equal', '/'), ('less and equal', '/'), ('lesser or equal', '/'),  ('lesser and equal', '/'),('lower and equal', '/'), ('lower or equal', '/'), ('smaller and equal', '/'), ('smaller or equal', '/'), ('<','<'), ('lesser', '<'), ('smaller', '<'), ('lower', '<'), ('less', '<'), ('!=', '!'), ('<>', '!'), ('not equal', '!'),('is equal','='),('is =','='),('equal','='),('is','='))
 
 replace_operators = collections.OrderedDict(replace_operators)
@@ -185,4 +186,5 @@ conf['ant_operators'] = ant_operators
 conf['operator_list'] = operator_list
 conf['syn_aggregate'] = syn_aggregate
 conf['aggregate_list'] = aggregate_list
+conf['attr_datatype'] = attr_datatype
 conf.close()

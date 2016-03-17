@@ -7,6 +7,7 @@ class QueryConstruction:
 		conf = shelve.open('conf')
 		self.attr_relations = conf['attr_relations']
 		self.relations_attr = conf['relations_attr']
+		self.attr_datatype = conf['attr_datatype']
 		self.select_list = select_list
 		self.from_list = from_list
 		self.where_list = where_list
@@ -22,6 +23,27 @@ class QueryConstruction:
 			self.final_query += "* "
 		else:
 			for index in range(len(self.select_list)):
+				if self.select_list[index].find('(') != -1:
+					start_index = self.select_list[index].find('(')
+					end_index = self.select_list[index].find(')')
+					attribute_name = self.select_list[index][start_index + 1:end_index]
+					if attribute_name != '*':
+						rel = self.attr_relations[attribute_name]
+						for element in rel:
+							if element in self.unique_attribute_relation:
+								attribute_name = self.relations_attr[element][attribute_name]
+								break
+						new_string = self.select_list[index][0:start_index]
+						new_string += '('
+						new_string += attribute_name
+						new_string += ')'
+						self.select_list[index] = new_string
+				else:		
+					rel = self.attr_relations[self.select_list[index]]
+					for element in rel:
+						if element in self.unique_attribute_relation:
+							self.select_list[index] = self.relations_attr[element][self.select_list[index]]
+							break
 				self.final_query += self.select_list[index]
 				if index < len(self.select_list) - 1:
 					self.final_query += ","
@@ -74,13 +96,15 @@ class QueryConstruction:
 		self.final_query += " where "
 		for index in range(len(self.where_list)):
 			if (index + 1) % 4 == 3:
-				if self.where_list[index].isdigit():
-					self.final_query += self.where_list[index]	
+				if self.where_list[index - 2] in self.attr_datatype:
+					if self.attr_datatype[self.where_list[index - 2]] == 'varchar':
+						self.final_query += '\'' 
+						self.final_query += self.where_list[index]
+						self.final_query += '\''
+					elif self.attr_datatype[self.where_list[index - 2]] == 'int':
+						self.final_query += self.where_list[index]
 				else:
-					self.final_query += '\''
 					self.final_query += self.where_list[index]
-					self.final_query += '\''
-					
 			elif self.where_list[index] == "*":
 				self.final_query += ">="
 
@@ -91,6 +115,12 @@ class QueryConstruction:
 				self.final_query += "!="
 
 			else:
+				if self.where_list[index] in self.attr_relations:
+					rel = self.attr_relations[self.where_list[index]]
+					for element in rel:
+						if element in self.unique_attribute_relation:
+							self.where_list[index] = self.relations_attr[element][self.where_list[index]]
+							break
 				self.final_query += self.where_list[index]
 			self.final_query += " "
 	
