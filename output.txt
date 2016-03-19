@@ -21,3 +21,4 @@ select * from employee,department where eid = 15 and employee.did = department.d
 select deptid from department where dname = 'hr' 
 select dname,deptid from department where deptid = 5 
 select pname,projid from project where projid = 4 
+select pid from employee where pid = 9 

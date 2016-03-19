@@ -43,7 +43,7 @@ replace_operators = collections.OrderedDict(replace_operators)
 ant_operators = {'=':'!','!':'=','/':'>','>':'/','*':'<','<':'*'}
 operator_list = ['=','!','/','>','<','*']
 
-syn_aggregate = (('max','max'), ('maximum','max'), ('greatest','max'), ('biggest', 'max'), ('most','max'), ('largest','max'), ('least','min'), ('min','min'), ('minimum','min'), ('smallest','min'), ('tiniest','min'), ('average','avg'), ('avg','avg'), ('mean','avg'), ('total number','count'), ('number','count'), ('count','count'), ('sum','sum'), ('total','sum'), ('summation','sum'), ('add','sum'), ('net','sum'))
+syn_aggregate = (('highest', 'max'), ('max','max'), ('maximum','max'), ('greatest','max'), ('biggest', 'max'), ('most','max'), ('largest','max'), ('least','min'), ('lowest', 'min'), ('min','min'), ('minimum','min'), ('smallest','min'), ('tiniest','min'), ('average','avg'), ('avg','avg'), ('mean','avg'), ('total number','count'), ('number','count'), ('count','count'), ('sum','sum'), ('total','sum'), ('summation','sum'), ('add','sum'), ('net','sum'))
 
 syn_aggregate = collections.OrderedDict(syn_aggregate)
 aggregate_list = ['max', 'min', 'avg', 'sum', 'count']
