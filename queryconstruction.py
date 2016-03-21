@@ -3,13 +3,12 @@ import shelve,time
 
 class QueryConstruction:
 	
-	def __init__ (self, select_list, from_list, where_list, unique_attribute_relation):
+	def __init__ (self, select_list, where_list, unique_attribute_relation):
 		conf = shelve.open('conf')
 		self.attr_relations = conf['attr_relations']
 		self.relations_attr = conf['relations_attr']
 		self.attr_datatype = conf['attr_datatype']
 		self.select_list = select_list
-		self.from_list = from_list
 		self.where_list = where_list
 		self.unique_attribute_relation = unique_attribute_relation
 

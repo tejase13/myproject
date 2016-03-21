@@ -6,6 +6,7 @@ from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import WordPunctTokenizer
+from initialization import Initialization
 
 class NLP:
 	def __init__ (self, query):
@@ -30,102 +31,87 @@ class NLP:
 		self.lowercase_query = self.original_query.lower()
 
 		#Stop words list
-		self.stop_words = list(stopwords.words("english"))
-		self.stop_words.remove('of')
-		self.stop_words.remove('not')
-		self.stop_words.remove('is')
-		self.stop_words.remove('nor')
-		self.stop_words.remove('and')
-		self.stop_words.remove('or')
-		self.stop_words.remove('but')
-		self.stop_words.remove('did')
-		self.stop_words.append('whose')
-		self.stop_words.append('tell')
-		self.stop_words.append('give')
-		self.stop_words.append('display')
-		self.stop_words.append('list')
-		self.stop_words.append('print')
-		self.stop_words.append('show')
-		self.stop_words.append('select')
-		self.stop_words.append('fetch')
-		self.stop_words.append('search')
-		self.stop_words.append('get')
-		self.stop_words.append('want')
+		init = Initialization()
+		self.stop_words = init.initializeStopWords()
 
-
+	#Replace all contractions like isn't with is not and some other substitutions
 	def replaceContractions(self):
-		for key in self.replace_contractions:
-			if self.lowercase_query.find(key) != -1:
-				self.lowercase_query = self.lowercase_query.replace(key, self.replace_contractions[key])
+		for contraction in self.replace_contractions:
+			if self.lowercase_query.find(contraction) != -1:
+				self.lowercase_query = self.lowercase_query.replace(contraction, self.replace_contractions[contraction])
 
+	#Break into tokens and initialize punctuation and alphabet lists
 	def tokenize(self):
 		self.words = WordPunctTokenizer().tokenize(self.lowercase_query)
-		self.punct_list = list(string.punctuation)
-		self.punct_list.remove('<')
-		self.punct_list.remove('>')
-		self.punct_list.remove('!')
-		self.punct_list.remove('=')
-		self.punct_list.remove('*')
-		self.punct_list.remove('/')
+		init = Initialization()
+		self.punct_list = init.initializePunctList()
 		self.alpha_list = list(string.ascii_lowercase)
 
+	#Remove stop words and punctuations and individual alphabets
 	def removePunctAndStop(self):
-		self.keywords = []
-		for word in self.words:
-			if word not in self.punct_list and word not in self.alpha_list and word not in self.stop_words:
-				self.keywords.append(word)
+		self.keywords = [word for word in self.words if word not in self.punct_list and word not in self.alpha_list and word not in self.stop_words]
 
+	#Method used for substituting individual tokens with their domain relevant words
 	def replaceKeywordsWithEntity(self, keywords, entity):
-		keyword_copy = list(keywords)
-		length = len(keywords)
-		for index in range(length):
-			if keywords[index] in entity:
-				keyword_copy[index] = entity[keywords[index]]
+		keyword_copy = [entity[word] if word in entity else word for word in keywords]
 		return keyword_copy
 
+	#Replace relation synonyms with the relation name present in the database
 	def replaceRelations(self):
 		self.keyword_copy = self.replaceKeywordsWithEntity (self.keywords, self.relations)
 
+	#Replace some synonyms of part of an attribute with the word present in database for eg: identities --> id 
 	def replaceAttr(self):
 		self.keyword_copy = self.replaceKeywordsWithEntity (self.keyword_copy, self.replace_attr)
 	
 	def reconstruct(self):
 		self.lowercase_query = ' '.join(self.keyword_copy)
 
+	#Method used for reverse search the string
 	def replaceQueryTermWithEntity (self, query, entity):
 		for key in entity:
 			if query.find(key) != -1:
 				query = query.replace(key, entity[key])
 		return query
 
+	#Replace synonyms of operators with the operator symbol
 	def replaceOperators(self):
 		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.replace_operators)
 
+	#Replace synonyms of attributes with the actual attribute present in dataabase
 	def replaceSynAttr(self):
 		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.syn_attr)
 	
+	#Replace synonyms of common nouns with the actual common noun in the database
 	def replaceSynCommon(self):
 		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.syn_common)
-	
-	def operatorSearch(self, j, i):
-		for index in range(j,i):
-			if self.constant_assoc[index] in self.operator_list:
+
+	#search for index of operator in range start_index to end_index 
+	def operatorSearch(self, start_index, end_index):
+		for index in range(start_index, end_index):
+			if self.isOper(self.constant_assoc[index]):
 				return index
 		return None
 
-	def assignConstant (self, list, a, b, c):
-		list.append(a)
-		list.append(b)
-		list.append(c)
+	#Return a list with the three values to append to another list
+	def assignConstant (self, attribute_name, operator, constant):
+		return [attribute_name, operator, constant]
+
+	#Appending to unique or common attribute relation list
+	def appendToRelationList(self, attribute_name):
+		relation_list = self.attr_relations[attribute_name]
+		if len(relation_list) == 1:
+			if relation_list[0] not in self.unique_attribute_relation:
+				self.unique_attribute_relation.append(relation_list[0])
+		else:
+			for relations in relation_list:						
+				if relations not in self.common_attribute_relation:
+					self.common_attribute_relation.append(relations)
+
 
   	#Find all constants between self.start_index and self.end_index
 	def constantAssociation(self, start_index, end_index):
 		self.SELECT = []
-		#self.WHERE= {}
-		self.FROM = {}
-		#self.constant_assoc = self.lowercase_query.split(' ')
-		print(start_index)
-		print(end_index)
 
 		#temp_list stores all where clause elements in the form attr,operator,constant
 		temp_list = []
@@ -144,44 +130,35 @@ class NLP:
 					match = True
 					while j >= start_index:
 						#if attribute is found
-						if self.constant_assoc[j] in self.attr_relations:
+						if self.isAttr(self.constant_assoc[j]):
 							#search for operator between the position of attribute and constant
-							operator = self.operatorSearch(j,i)
-							#Appending to unique or common attribute relation list
-							rel = self.attr_relations[self.constant_assoc[j]]
-							if len(rel) == 1:
-								if rel[0] not in self.unique_attribute_relation:
-									self.unique_attribute_relation.append(rel[0])
-							else:
-								for element in rel:						
-									if  element not in self.common_attribute_relation:
-										self.common_attribute_relation.append(element)
+							operator_index = self.operatorSearch(j,i)
+							self.appendToRelationList(self.constant_assoc[j])
 
-							if operator is None: #use default operator
-								self.assignConstant(temp_list, self.constant_assoc[j], self.default_operator, self.constant_assoc[i])
-								print (temp_list)
+							if operator_index is None: #use default operator
+								temp_list.extend(self.assignConstant(self.constant_assoc[j], self.default_operator, self.constant_assoc[i]))
 								self.constant_assoc.remove(self.constant_assoc[i])
 								counter += 1
 
 							else:
-								self.assignConstant(temp_list, self.constant_assoc[j], self.constant_assoc[operator], self.constant_assoc[i])
-								self.default_operator = self.constant_assoc[operator] 
+								temp_list.extend(self.assignConstant(self.constant_assoc[j], self.constant_assoc[operator_index], self.constant_assoc[i]))
+								self.default_operator = self.constant_assoc[operator_index] 
 								self.constant_assoc.remove(self.constant_assoc[i])
-								self.constant_assoc.remove(self.constant_assoc[operator])
+								self.constant_assoc.remove(self.constant_assoc[operator_index])
 								counter += 2
 							break
 						j = j - 1
 
 					#if no attribute found
 					if j < start_index:
-						operator = self.operatorSearch(start_index,i)
-						if operator is not None:
-							temp_list.append(self.constant_assoc[operator])
+						operator_index = self.operatorSearch(start_index,i)
+						if operator_index is not None:
+							temp_list.append(self.constant_assoc[operator_index])
 							counter += 1
 						temp_list.append(self.constant_assoc[i])
 						self.constant_assoc.remove(self.constant_assoc[i])
-						if operator is not None:
-							self.constant_assoc.remove(self.constant_assoc[operator])
+						if operator_index is not None:
+							self.constant_assoc.remove(self.constant_assoc[operator_index])
 						counter += 1
 					break
 
@@ -192,36 +169,24 @@ class NLP:
 			end_index = end_index - counter
 			counter = 0
 
-		print(temp_list)
 
 		#return new end_index and the list with all the elements
 		return [end_index, temp_list]	
 
 	
 	def commonAssociation(self, start_index, end_index):
-		print(start_index)
-		print(end_index)
 		self.lowercase_query = ' '.join(self.constant_assoc[start_index : end_index])
-		print(self.lowercase_query)
 		temp_list = []
 		while True:
 			match = False
-			for key in self.common_attr:
-				if self.lowercase_query.find(key) != -1:
+			for common_noun in self.common_attr:
+				if self.lowercase_query.find(common_noun) != -1:
+					print('common assoc', common_noun)
 					match = True
-					# similar implementation to the above method dealing with duplicates in FROM dictionary
-					self.assignConstant(temp_list, self.common_attr[key], '=', key)
-					self.lowercase_query = self.lowercase_query.replace(key, '')
+					temp_list.extend(self.assignConstant(self.common_attr[common_noun], '=', common_noun))
+					self.lowercase_query = self.lowercase_query.replace(common_noun, '')
 					#Appending to unique or common attribute relation list
-					rel = self.attr_relations[self.common_attr[key]]
-					if len(rel) == 1:
-						if rel[0] not in self.unique_attribute_relation:
-							self.unique_attribute_relation.append(rel[0])
-					else:
-						for element in rel:
-							if  element not in self.common_attribute_relation:
-								self.common_attribute_relation.append(element)
-					
+					self.appendToRelationList(self.common_attr[common_noun])
 
 			if match is False:
 				break
@@ -241,35 +206,42 @@ class NLP:
 	#traverse through the returned list and append attributes and operators in the list
 	#if they are not present for a particular constant
 	def assignEntity (self):
-		print(self.where_elements)
-		while len(self.where_elements) > 0:
-			if self.where_elementsIndex % 3 == 0:
-				if not self.isAttr(self.where_elements[self.where_elementsIndex]):
-					self.where_elements.insert(self.where_elementsIndex,self.default_attribute)
-				self.where_list.append(self.where_elements[self.where_elementsIndex])
+		while len(self.where_elements_list) > 0:
+			if self.where_elements_index % 3 == 0:
+				if not self.isAttr(self.where_elements_list[self.where_elements_index]):
+					self.where_elements_list.insert(self.where_elements_index,self.default_attribute)
+				self.WHERE.append(self.where_elements_list[self.where_elements_index])
 
-			if self.where_elementsIndex % 3 == 1:
-				if not self.isOper(self.where_elements[self.where_elementsIndex]):
-					self.where_elements.insert(self.where_elementsIndex,self.default_operator)
-				self.where_list.append(self.where_elements[self.where_elementsIndex])
+			if self.where_elements_index % 3 == 1:
+				if not self.isOper(self.where_elements_list[self.where_elements_index]):
+					self.where_elements_list.insert(self.where_elements_index,self.default_operator)
+				self.WHERE.append(self.where_elements_list[self.where_elements_index])
 
-			if self.where_elementsIndex % 3 == 2:
-				self.where_list.append(self.where_elements[self.where_elementsIndex])
+			if self.where_elements_index % 3 == 2:
+				self.WHERE.append(self.where_elements_list[self.where_elements_index])
 				if self.end_index < len(self.constant_assoc):
-					self.where_list.append(self.constant_assoc[self.end_index])
+					self.WHERE.append(self.constant_assoc[self.end_index])
 				else:
-					self.where_list.append(self.default_logical_operator)
-			self.where_elementsIndex += 1
+					self.WHERE.append(self.default_logical_operator)
+			self.where_elements_index += 1
 
-			if self.where_elementsIndex >= len(self.where_elements):
+			if self.where_elements_index >= len(self.where_elements_list):
 				break
+	
+	def appendCommonToWhereList(self):
+		#Traverse through the list and add default logical operator
+		for index in range(len(self.returned_common_list)):
+			if index % 3 == 2:
+				self.WHERE.append(self.returned_common_list[index])
+				self.WHERE.append(self.default_logical_operator)
+			else:
+				self.WHERE.append(self.returned_common_list[index])
 
 	def andOr(self):
 		self.constant_assoc = self.lowercase_query.split(' ')
-		print(self.constant_assoc)
 
 		#a list with all elements of where clause along with their and/or conjunctions
-		self.where_list = []
+		self.WHERE= []
 		self.start_index = -1 
 		self.end_index = 0
 		self.default_operator = ""
@@ -285,29 +257,23 @@ class NLP:
 				self.default_logical_operator = self.constant_assoc[self.end_index]
 				self.returned_list = self.constantAssociation(self.start_index + 1,self.end_index)
 
-				self.where_elements = self.returned_list[1]
+				self.where_elements_list = self.returned_list[1]
 				self.end_index = self.returned_list[0]
-				self.where_elementsIndex = 0
+				self.where_elements_index = 0
 
 				#traverse through the returned list and append attributes and operators in the list
 				#if they are not present for a particular constant
 				self.assignEntity ()
 
 				# in case there is no constant present between self.start_index and self.end_index we won't be able to get
-				# a default attribute and default operator from the self.where_list		
-				if len(self.where_list) > 0:
-					self.default_attribute = self.where_list[-4]
-					self.default_operator = self.where_list[-3]
-				# We're checking for common associations and appending the returned list to self.where_list
+				# a default attribute and default operator from the self.WHERE
+				if len(self.WHERE) > 0:
+					self.default_attribute = self.WHERE[-4]
+					self.default_operator = self.WHERE[-3]
+				# We're checking for common associations and appending the returned list to self.WHERE
 				#self.where_common_list = []
 				self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
-				#Traverse through the list and add default logical operator
-				for i in range(len(self.returned_common_list)):
-					if i % 3 == 2:
-						self.where_list.append(self.returned_common_list[i])
-						self.where_list.append(self.default_logical_operator)
-					else:
-						self.where_list.append(self.returned_common_list[i])						 
+				self.appendCommonToWhereList()
 				self.start_index = self.end_index
 
 
@@ -317,59 +283,36 @@ class NLP:
 
 		#search again when the end of list is reached
 		self.returned_list = self.constantAssociation(self.start_index + 1,self.end_index)
-		self.where_elements = self.returned_list[1]
+		self.where_elements_list = self.returned_list[1]
 		self.end_index = self.returned_list[0]
 
-		self.where_elementsIndex = 0
+		self.where_elements_index = 0
 		self.assignEntity ()
 
-		# We're checking for common associations and appending the returned list to self.where_list
+		# We're checking for common associations and appending the returned list to self.WHERE
 		self.where_common_list = []
-		print('hi')
 		self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
-		#Traverse through the list and add default logical operator
-		for i in range(len(self.returned_common_list)):
-			if i % 3 == 2:
-				self.where_list.append(self.returned_common_list[i])
-				self.where_list.append(self.default_logical_operator)
-			else:
-				self.where_list.append(self.returned_common_list[i])						 
+		self.appendCommonToWhereList()
 		self.start_index = self.end_index
-		if len(self.where_list) > 0:
-			self.where_list.pop()
-		print (self.where_list)	
+		if len(self.WHERE) > 0:
+			self.WHERE.pop()
 
 	
 	def backwardSearch(self, start_index, end_index):
 		index = end_index - 1
-		s = self.constant_assoc[end_index]
+		attribute_string  = self.constant_assoc[end_index]
 		match = False	
 		while index >= start_index:
-			if self.constant_assoc[index] in self.operator_list:
-				print(self.constant_assoc[index])
+			if self.isOper(self.constant_assoc[index]):
 				i = index - 1
-				print(i)
 				while i >= start_index:
 					if self.isAttr(self.constant_assoc[i]):
 						#Appending to unique or common attribute relation list
-						rel = self.attr_relations[self.constant_assoc[i]]
-						if len(rel) == 1:
-							if rel[0] not in self.unique_attribute_relation:
-								self.unique_attribute_relation.append(rel[0])
-						else:
-							for element in rel:
-								if  element not in self.common_attribute_relation:
-									self.common_attribute_relation.append(element)
+						self.appendToRelationList(self.constant_assoc[i])
 						#Stores index for removal of aggr attribute
 						if i not in self.remove_list:
 							self.remove_list.append(i)
-						s = s + '(' + self.constant_assoc[i] + ')'
-						rel = self.attr_relations[self.constant_assoc[i]] 
-						for j in rel:
-							if j in self.FROM:
-								self.FROM[j] += 1
-							else:
-								self.FROM[j] = 1
+						attribute_string = attribute_string + '(' + self.constant_assoc[i] + ')'
 						match = True
 						break
 					i = i - 1
@@ -377,41 +320,25 @@ class NLP:
 			if match is True:
 				break
 			index = index - 1
-		print(s)
 		if match is True:
-			self.SELECT.append(s)
+			self.SELECT.append(attribute_string)
 		return match
 
 	def forwardSearch(self, start_index, end_index):
-		print('hi')
-		s = self.constant_assoc[start_index]
+		attribute_string = self.constant_assoc[start_index]
 		for index in range(start_index + 1, end_index):
 			if self.isAttr(self.constant_assoc[index]):
 				#Appending to unique or common attribute relation list
-				rel = self.attr_relations[self.constant_assoc[index]]
-				if len(rel) == 1:
-					if rel[0] not in self.unique_attribute_relation:
-						self.unique_attribute_relation.append(rel[0])
-				else:
-					for element in rel:
-						if  element not in self.common_attribute_relation:
-							self.common_attribute_relation.append(element)
+				self.appendToRelationList(self.constant_assoc[index])
 				
 				if index not in self.remove_list:
 					self.remove_list.append(index)
-				s = s + '(' + self.constant_assoc[index] + ')'
-				rel = self.attr_relations[self.constant_assoc[index]]
-				for i in rel:
-					if i in self.FROM:
-						self.FROM[i] += 1
-					else:
-						self.FROM[i] = 1
+				attribute_string = attribute_string + '(' + self.constant_assoc[index] + ')'
 				break
-		self.SELECT.append(s)
+		self.SELECT.append(attribute_string)
 
 	def unknownAttr(self):
 		#self.constant_assoc = self.lowercase_query.split(' ')
-		print("Unknown attr ",self.constant_assoc)
 		lowercase_query = ' ' .join(self.constant_assoc)
 		lowercase_query = self.replaceQueryTermWithEntity(lowercase_query, self.syn_aggregate)
 		self.constant_assoc = lowercase_query.split(' ')
@@ -422,7 +349,6 @@ class NLP:
 			if self.constant_assoc[index] in self.aggregate_list and self.constant_assoc[index] != 'count':
 				end_index = index
 				result = self.backwardSearch(start_index, end_index)
-				print(result)
 				if result:
 					start_index = end_index + 1
 					continue
@@ -432,59 +358,40 @@ class NLP:
 					start_index = end_index + 1
 
 			elif self.constant_assoc[index] == 'count':
-				str = 'count(*)'
-				self.SELECT.append(str)
+				aggregate_string = 'count(*)'
+				self.SELECT.append(aggregate_string)
 				start_index = index + 1
 		
-		
-		self.remove_list.sort()
-		index = len(self.remove_list) - 1
-		while index >= 0:
-			self.constant_assoc.pop(self.remove_list[index])	
-			index = index - 1
+		#Sort indices in reverse and pop from constant_assoc		
+		self.remove_list.sort(reverse = True)
+		for index in self.remove_list:
+			self.constant_assoc.pop(index)	
 
 		# Non aggregate attributes
-		print(self.constant_assoc)
-		for index in self.constant_assoc:
-			if self.isAttr(index):
+		for word in self.constant_assoc:
+			if self.isAttr(word):
 				#Appending to unique or common attribute relation list
-				rel = self.attr_relations[index]
-				if len(rel) == 1:
-					if rel[0] not in self.unique_attribute_relation:
-						self.unique_attribute_relation.append(rel[0])
-				else:
-					for element in rel:
-						if  element not in self.common_attribute_relation:
-							self.common_attribute_relation.append(element)
-				if index not in self.SELECT:
-					self.SELECT.append(index)
-				rel = self.attr_relations[index]
-				for i in rel:
-					if i in self.FROM:
-						self.FROM[i] += 1
-					else:
-						self.FROM[i] = 1
-		print("Select list:",self.SELECT)
+				self.appendToRelationList(word)
+				if word not in self.SELECT:
+					self.SELECT.append(word)
 
 
 	#searching the remaining keywords for relations
 	def relationSearch(self):
-		for index in self.constant_assoc:
-			if index in self.relations:
-				if index not in self.unique_attribute_relation:
-					self.unique_attribute_relation.append(index)
-		print ("Unique relation",self.unique_attribute_relation)
-		print ("Common relation",self.common_attribute_relation)
+		for word in self.constant_assoc:
+			if word in self.relations:
+				if word not in self.unique_attribute_relation:
+					self.unique_attribute_relation.append(word)
 					
 
 	def negationCheck(self):
 		bool = False
-		for index in self.constant_assoc:
-			if index == 'not': 
+		for word in self.constant_assoc:
+			if word == 'not': 
 				bool = True
 				break
-		if bool and len(self.where_list) > 0:
-			for index in range(len(self.where_list)):
+		if bool and len(self.WHERE) > 0:
+			for index in range(len(self.WHERE)):
 				if (index + 1) % 4 == 2:
-					self.where_list[index] = self.ant_operators[self.where_list[index]]
+					self.WHERE[index] = self.ant_operators[self.WHERE[index]]
 		

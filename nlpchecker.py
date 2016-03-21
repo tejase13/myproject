@@ -23,11 +23,10 @@ for string in queries:
 	a.relationSearch()
 	a.negationCheck()
 	print(a.SELECT)
-	print(a.FROM)
-	print(a.where_list)
+	print(a.WHERE)
         #print("Unique relation ",a.unique_attribute_relation)
         #print("Common relation ",a.common_attribute_relation)
-	b = QueryConstruction(a.SELECT, a.FROM, a.where_list, a.unique_attribute_relation)
+	b = QueryConstruction(a.SELECT, a.WHERE, a.unique_attribute_relation)
 
 	b.checkJoin()
 	b.constructSelectPart()
