@@ -3,7 +3,7 @@ import shelve,time
 
 class QueryConstruction:
 	
-	def __init__ (self, select_list, where_list, unique_attribute_relation):
+	def __init__ (self, select_list, where_list, unique_attribute_relation, common_attribute_relation):
 		conf = shelve.open('conf')
 		self.attr_relations = conf['attr_relations']
 		self.relations_attr = conf['relations_attr']
@@ -11,10 +11,9 @@ class QueryConstruction:
 		self.select_list = select_list
 		self.where_list = where_list
 		self.unique_attribute_relation = unique_attribute_relation
+		self.common_attribute_relation = common_attribute_relation
 
 		self.final_query = ""
-
-
 
 	def constructSelectPart(self):
 		self.final_query += "select "
@@ -80,12 +79,20 @@ class QueryConstruction:
 
 	def constructFromPart(self):
 		self.final_query += "from "
+	
+		if len(self.unique_attribute_relation) > 0:
+			for index in range(len(self.unique_attribute_relation)):
+				self.final_query += self.unique_attribute_relation[index]
+				if index < len(self.unique_attribute_relation) - 1:
+					self.final_query += ","
+			return 
 		
-		for index in range(len(self.unique_attribute_relation)):
-			self.final_query += self.unique_attribute_relation[index]
-			if index < len(self.unique_attribute_relation) - 1:
-				self.final_query += ","
-
+		if len(self.common_attribute_relation) > 0:
+			self.final_query += self.common_attribute_relation[0]
+			return
+		
+		print ("Invalid query")
+		exit()
 
 	def constructWherePart(self):
 

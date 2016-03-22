@@ -67,7 +67,7 @@ class NLP:
 	def reconstruct(self):
 		self.lowercase_query = ' '.join(self.keyword_copy)
 
-	#Method used for reverse search the string
+	#Method used for searching the string in reverse
 	def replaceQueryTermWithEntity (self, query, entity):
 		for key in entity:
 			if query.find(key) != -1:
@@ -78,7 +78,7 @@ class NLP:
 	def replaceOperators(self):
 		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.replace_operators)
 
-	#Replace synonyms of attributes with the actual attribute present in dataabase
+	#Replace synonyms of attributes with the actual attribute present in database employee name --> ename
 	def replaceSynAttr(self):
 		self.lowercase_query = self.replaceQueryTermWithEntity (self.lowercase_query, self.syn_attr)
 	
@@ -181,7 +181,6 @@ class NLP:
 			match = False
 			for common_noun in self.common_attr:
 				if self.lowercase_query.find(common_noun) != -1:
-					print('common assoc', common_noun)
 					match = True
 					temp_list.extend(self.assignConstant(self.common_attr[common_noun], '=', common_noun))
 					self.lowercase_query = self.lowercase_query.replace(common_noun, '')

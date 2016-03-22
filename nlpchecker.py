@@ -26,7 +26,7 @@ for string in queries:
 	print(a.WHERE)
         #print("Unique relation ",a.unique_attribute_relation)
         #print("Common relation ",a.common_attribute_relation)
-	b = QueryConstruction(a.SELECT, a.WHERE, a.unique_attribute_relation)
+	b = QueryConstruction(a.SELECT, a.WHERE, a.unique_attribute_relation, a.common_attribute_relation)
 
 	b.checkJoin()
 	b.constructSelectPart()
