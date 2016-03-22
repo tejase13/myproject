@@ -1,5 +1,6 @@
 #! /usr/bin/python3
 
+import sqlite3 
 import shelve
 import collections
 relations1 = {'worker':'employee', 'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
@@ -171,6 +172,31 @@ replace_contractions = {
 "but":"and"
 }
 
+#DB part from proper noun
+conn = sqlite3.connect('be_proj_check.db')
+''' We need to use the Connection instance method cursor() to return a Cursor instance corresponding to the database we want to query.
+'''
+cursor = conn.cursor()
+cursor.execute('SELECT ename FROM employee;')
+results = cursor.fetchall()
+proper_nouns = {}
+
+for name in results:
+	proper_nouns[name[0].lower()] = 'ename'
+
+cursor.execute('SELECT hod FROM DEPARTMENT;')
+results = cursor.fetchall()
+
+for name in results:
+	proper_nouns[name[0].lower()] = 'hod'
+
+cursor.execute('SELECT pname FROM PROJECT;') 
+results = cursor.fetchall()
+
+for name in results:
+	proper_nouns[name[0].lower()] = 'pname'
+
+conn.commit()
 
 conf = shelve.open('conf')
 conf['relations'] = relations
@@ -187,4 +213,5 @@ conf['operator_list'] = operator_list
 conf['syn_aggregate'] = syn_aggregate
 conf['aggregate_list'] = aggregate_list
 conf['attr_datatype'] = attr_datatype
+conf['proper_nouns'] = proper_nouns
 conf.close()

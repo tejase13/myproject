@@ -1,3 +1,4 @@
+#! /usr/bin/python3
 import sqlite3 
 conn = sqlite3.connect('be_proj_check.db')
 ''' We need to use the Connection instance method cursor() to return a Cursor instance corresponding to the database we want to query.
