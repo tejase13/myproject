@@ -10,7 +10,7 @@ select deptid from department where dname = 'sales'
 select did,eid from employee where eid = 6 
 select pstrength,projid from project where projid = 7 
 select ename,salary,pid from employee where salary = 5000 and salary < 75000 and pid = 7 
-select * from employee,department where post = 'manager' or dname = 'hr' or dname = 'sales' and employee.did = department.deptid 
+select * from department,employee where dname = 'hr' or post = 'manager' or dname = 'sales' and employee.did = department.deptid 
 select * from department,employee where dname = 'sales' and employee.did = department.deptid 
 select ename,salary,eid,pid from employee where eid = 10 and pid = 15 
 select max(pstrength) from project
@@ -22,3 +22,5 @@ select deptid from department where dname = 'hr'
 select dname,deptid from department where deptid = 5 
 select pname,projid from project where projid = 4 
 select pid from employee where pid = 9 
+select salary from employee
+select * from department where dname = 'it' 

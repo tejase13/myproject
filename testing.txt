@@ -22,3 +22,5 @@ department id of hr department
 department name where department id is 5
 project name and project id where project id is 4
 how many employees work in project id 9
+Tejas Ekawade salary
+Which department are Joel Alvares and Mit Gorakh working

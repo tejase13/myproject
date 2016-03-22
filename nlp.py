@@ -7,6 +7,7 @@ from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk import WordPunctTokenizer
 from initialization import Initialization
+from ner import NER
 
 class NLP:
 	def __init__ (self, query):
@@ -34,6 +35,10 @@ class NLP:
 		init = Initialization()
 		self.stop_words = init.initializeStopWords()
 
+	def namedEntityRecognition(self):
+		ne = NER(self.original_query)
+		self.named_entities = ne.performNER()
+		print (self.named_entities)
 	#Replace all contractions like isn't with is not and some other substitutions
 	def replaceContractions(self):
 		for contraction in self.replace_contractions:
@@ -191,6 +196,10 @@ class NLP:
 				break
 		return temp_list
 
+	def properAssociation(self, start_index, end_index):
+		self.lowercase_query = ' '.join(self.constant_assoc[start_index : end_index])
+		temp_list = []
+
 
 	def isAttr(self, var):
 		if var in self.attr_relations:
@@ -203,7 +212,7 @@ class NLP:
 		return False
 
 	#traverse through the returned list and append attributes and operators in the list
-	#if they are not present for a particular constant
+	#if they are not present for a particular constant e.g eid = 25 is formed
 	def assignEntity (self):
 		while len(self.where_elements_list) > 0:
 			if self.where_elements_index % 3 == 0:

@@ -8,6 +8,7 @@ for string in queries:
 #string ="Biggest and smallest project in terms of workforce"
 
 	a = NLP(string)
+	a.namedEntityRecognition()
 	a.replaceContractions()
 	a.tokenize()
 	a.removePunctAndStop()
