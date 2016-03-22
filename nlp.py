@@ -26,6 +26,7 @@ class NLP:
 		self.ant_operators = conf['ant_operators']
 		self.syn_aggregate = conf['syn_aggregate']
 		self.aggregate_list = conf['aggregate_list']
+		self.proper_nouns = conf['proper_nouns']
 
 		#Original Query	
 		self.original_query = query
@@ -37,8 +38,10 @@ class NLP:
 
 	def namedEntityRecognition(self):
 		ne = NER(self.original_query)
-		self.named_entities = ne.performNER()
-		print (self.named_entities)
+		self.entities = ne.performNER()
+		self.named_entities = [ne.lower() for ne in self.entities]
+		#print (self.named_entities)
+
 	#Replace all contractions like isn't with is not and some other substitutions
 	def replaceContractions(self):
 		for contraction in self.replace_contractions:
@@ -199,7 +202,26 @@ class NLP:
 	def properAssociation(self, start_index, end_index):
 		self.lowercase_query = ' '.join(self.constant_assoc[start_index : end_index])
 		temp_list = []
+		for ne in self.named_entities:
+			if self.lowercase_query.find(ne) != -1:
+				if ne in self.proper_nouns:
+					temp_list.extend(self.assignConstant(self.proper_nouns[ne], "=", ne))
+					self.lowercase_query = self.lowercase_query.replace(ne, '')
+					self.appendToRelationList(self.proper_nouns[ne])
 
+		while True:
+			match = False
+			for name in self.proper_nouns:
+				if self.lowercase_query.find(name) != -1:
+					match = True
+					temp_list.extend(self.assignConstant(self.proper_nouns[name], '=', name))
+					self.lowercase_query = self.lowercase_query.replace(name, '')
+					self.appendToRelationList(self.proper_nouns[name])
+
+			if match is False:
+				break
+		print(temp_list)
+		return temp_list
 
 	def isAttr(self, var):
 		if var in self.attr_relations:
@@ -236,14 +258,14 @@ class NLP:
 			if self.where_elements_index >= len(self.where_elements_list):
 				break
 	
-	def appendCommonToWhereList(self):
+	def appendCommonToWhereList(self, returned_list):
 		#Traverse through the list and add default logical operator
-		for index in range(len(self.returned_common_list)):
+		for index in range(len(returned_list)):
 			if index % 3 == 2:
-				self.WHERE.append(self.returned_common_list[index])
+				self.WHERE.append(returned_list[index])
 				self.WHERE.append(self.default_logical_operator)
 			else:
-				self.WHERE.append(self.returned_common_list[index])
+				self.WHERE.append(returned_list[index])
 
 	def andOr(self):
 		self.constant_assoc = self.lowercase_query.split(' ')
@@ -281,7 +303,11 @@ class NLP:
 				# We're checking for common associations and appending the returned list to self.WHERE
 				#self.where_common_list = []
 				self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
-				self.appendCommonToWhereList()
+				self.appendCommonToWhereList(self.returned_common_list)
+				
+				self.returned_proper_list = self.properAssociation(self.start_index + 1, self.end_index)
+				self.appendCommonToWhereList(self.returned_proper_list)
+				
 				self.start_index = self.end_index
 
 
@@ -300,7 +326,10 @@ class NLP:
 		# We're checking for common associations and appending the returned list to self.WHERE
 		self.where_common_list = []
 		self.returned_common_list = self.commonAssociation(self.start_index + 1, self.end_index)
-		self.appendCommonToWhereList()
+		self.appendCommonToWhereList(self.returned_common_list)
+
+		self.returned_proper_list = self.properAssociation(self.start_index + 1, self.end_index)
+		self.appendCommonToWhereList(self.returned_proper_list)
 		self.start_index = self.end_index
 		if len(self.WHERE) > 0:
 			self.WHERE.pop()

@@ -2,6 +2,7 @@
 
 import sqlite3 
 import shelve
+from nltk.corpus import state_union
 import collections
 relations1 = {'worker':'employee', 'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
 
@@ -197,8 +198,10 @@ for name in results:
 	proper_nouns[name[0].lower()] = 'pname'
 
 conn.commit()
+train_text = state_union.raw("2005-GWBush.txt")
 
 conf = shelve.open('conf')
+conf['train_text'] = train_text
 conf['relations'] = relations
 conf['attr_relations'] = attr_relations
 conf['replace_attr'] = replace_attr

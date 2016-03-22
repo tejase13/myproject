@@ -22,5 +22,23 @@ select deptid from department where dname = 'hr'
 select dname,deptid from department where deptid = 5 
 select pname,projid from project where projid = 4 
 select pid from employee where pid = 9 
-select salary from employee
-select * from department where dname = 'it' 
+select * from department,employee where hod = 'tejas ekawade' and employee.did = department.deptid 
+select * from department where hod = 'joel alvares' and dname = 'it' and hod = 'mit gorakh' 
+select eid from employee where ename = 'larry king' 
+select salary from employee where ename = 'carl diaz' 
+select post from employee where ename = 'rebecca thompson' 
+select pstrength from project where pname = 'notification service' 
+select * from project where pname = 'data science angels' 
+select * from project,employee where pname = 'data science angels' and employee.pid = project.projid 
+select phone from employee where ename = 'donald powell' 
+select * from department,employee where hod = 'tejas ekawade' and employee.did = department.deptid 
+select * from department where hod = 'joel alvares' and dname = 'it' and hod = 'mit gorakh' 
+select eid from employee where ename = 'larry king' 
+select salary from employee where ename = 'carl diaz' 
+select post from employee where ename = 'rebecca thompson' 
+select pstrength from project where pname = 'notification service' 
+select * from project where pname = 'data science angels' 
+select * from project,employee where pname = 'data science angels' and employee.pid = project.projid 
+select phone from employee where ename = 'donald powell' 
+select avg(salary),phone from employee where post = 'manager' 
+select max(salary) from employee where post = 'manager' 

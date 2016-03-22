@@ -24,3 +24,21 @@ project name and project id where project id is 4
 how many employees work in project id 9
 Tejas Ekawade salary
 Which department are Joel Alvares and Mit Gorakh working
+Employee id of Larry King
+Salary of Carl Diaz
+What is the post of Rebecca Thompson
+What is the workforce of Notification Service
+how many people are working on Data Science Angels
+which employees are working on Data Science Angels
+Phone of Donald Powell
+tejas ekawade salary
+Which department are joel Alvares and mit Gorakh working
+Employee id of larry king
+Salary of carl diaz
+What is the post of rebecca thompson
+What is the workforce of notification service
+how many people are working on data science angels
+which employees are working on data science angels
+Phone of donald powell
+what is the phone of the manager with mean salary
+highest salary of manager

@@ -2,17 +2,14 @@ import nltk
 from nltk.corpus import state_union
 from nltk.tokenize import PunktSentenceTokenizer
 from nltk.tree import Tree
-
+import shelve
 class NER:
     """docstring for ClassName"""
     def __init__(self, query):
         self.original_query = query
-        
-        self.train_text = state_union.raw("2005-GWBush.txt")
-        #self.sample_text = state_union.raw("2006-GWBush.txt")
-
+       	conf = shelve.open('conf') 
+        self.train_text = conf['train_text']
         self.custom_sent_tokenizer = PunktSentenceTokenizer(self.train_text)
-
         self.tokenized = self.custom_sent_tokenizer.tokenize(self.original_query)
 
     def processContent(self):
