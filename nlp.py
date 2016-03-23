@@ -2,6 +2,7 @@
 
 import string
 import shelve,time
+import re 
 from nltk.corpus import wordnet
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
@@ -45,8 +46,8 @@ class NLP:
 	#Replace all contractions like isn't with is not and some other substitutions
 	def replaceContractions(self):
 		for contraction in self.replace_contractions:
-			if self.lowercase_query.find(contraction) != -1:
-				self.lowercase_query = self.lowercase_query.replace(contraction, self.replace_contractions[contraction])
+			regex = '\\b' + contraction + '\\b'
+			self.lowercase_query = re.sub(regex, self.replace_contractions[contraction], self.lowercase_query)
 
 	#Break into tokens and initialize punctuation and alphabet lists
 	def tokenize(self):
@@ -78,8 +79,8 @@ class NLP:
 	#Method used for searching the string in reverse
 	def replaceQueryTermWithEntity (self, query, entity):
 		for key in entity:
-			if query.find(key) != -1:
-				query = query.replace(key, entity[key])
+			regex = '\\b' + key + '\\b'
+			query = re.sub(regex, entity[key], query)
 		return query
 
 	#Replace synonyms of operators with the operator symbol
@@ -188,13 +189,13 @@ class NLP:
 		while True:
 			match = False
 			for common_noun in self.common_attr:
-				if self.lowercase_query.find(common_noun) != -1:
+				regex = '\\b' + common_noun + '\\b'
+				found_list = re.findall(regex, self.lowercase_query)
+				for found in found_list:
 					match = True
-					temp_list.extend(self.assignConstant(self.common_attr[common_noun], '=', common_noun))
-					self.lowercase_query = self.lowercase_query.replace(common_noun, '')
-					#Appending to unique or common attribute relation list
-					self.appendToRelationList(self.common_attr[common_noun])
-
+					temp_list.extend(self.assignConstant(self.common_attr[found], '=', found))
+					self.appendToRelationList(self.common_attr[found])
+				self.lowercase_query = re.sub(regex, '', self.lowercase_query)
 			if match is False:
 				break
 		return temp_list
@@ -202,25 +203,32 @@ class NLP:
 	def properAssociation(self, start_index, end_index):
 		self.lowercase_query = ' '.join(self.constant_assoc[start_index : end_index])
 		temp_list = []
+		print ('proper', self.named_entities)
 		for ne in self.named_entities:
-			if self.lowercase_query.find(ne) != -1:
-				if ne in self.proper_nouns:
-					temp_list.extend(self.assignConstant(self.proper_nouns[ne], "=", ne))
-					self.lowercase_query = self.lowercase_query.replace(ne, '')
-					self.appendToRelationList(self.proper_nouns[ne])
+			regex = '\\b' + ne + '\\b'
+			found_list = re.findall(regex, self.lowercase_query)
+			flag = False
+			for found in found_list:
+				if found in self.proper_nouns:
+					flag = True
+					temp_list.extend(self.assignConstant(self.proper_nouns[found], "=", ne))
+					self.appendToRelationList(self.proper_nouns[found])
+			if flag:
+				self.lowercase_query = re.sub(regex, '', self.lowercase_query)
 
 		while True:
 			match = False
 			for name in self.proper_nouns:
-				if self.lowercase_query.find(name) != -1:
+				regex = '\\b' + name + '\\b'				 
+				found_list = re.findall(regex, self.lowercase_query)
+				for found in found_list:
 					match = True
-					temp_list.extend(self.assignConstant(self.proper_nouns[name], '=', name))
-					self.lowercase_query = self.lowercase_query.replace(name, '')
-					self.appendToRelationList(self.proper_nouns[name])
+					temp_list.extend(self.assignConstant(self.proper_nouns[name], "=", found)) 
+					self.appendToRelationList(self.proper_nouns[found])
+				self.lowercase_query = re.sub(regex, '', self.lowercase_query)
 
 			if match is False:
 				break
-		print(temp_list)
 		return temp_list
 
 	def isAttr(self, var):

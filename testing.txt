@@ -1,19 +1,19 @@
-empid where eid is 5, 6 or 3
+employee name where eid is 5, 6 or 3
 empid where eid is 6 or eid is 4 and pid is 20
 empid where eid is 2 or 5 and greater than 4
 name of the employee where eid greater than 10 or less than equal to 25
 employee salary where eid greater than 9 or deptid not equal 33 and project id lesser equal than 28
 empname, dept id where eid greater than 15 or less than 20
-Find the name and salary of eid 13--X
-Find the HOD of HR DEPARTMENT--Y
-whats the dept id of Sales department--Y
-What is the dept id of employee with id 6--Y
-Strength of project id 7--Y
-employee name where salary is greater than 5000 and less than 75000 and works in project id 7--Y
-Salary of manager who works in HR or sales department--(Mapped an extra 'or' instead of 'and')
-Employee ids working in sales department--(Tried join to see the result)
-Find the employee name and salary of eid 10 and pid 15--Y
-Biggest project in terms of workforce -- 
+Find the name and salary of eid 13
+Find the HOD of HR DEPARTMENT
+whats the dept id of Sales department
+What is the dept id of employee with id 6
+Strength of project id 7
+employee name where salary is greater than 5000 and less than 75000 and works in project id 7
+Salary of manager who works in HR or sales department
+Employee ids working in sales department
+Find the employee name and salary of eid 10 and pid 15
+Biggest project in terms of workforce
 Employee with eid 3 belongs to which department name
 Employee with eid 3 belongs to which department
 Project name in which eid 10 works and project id greater than 3
@@ -42,3 +42,12 @@ which employees are working on data science angels
 Phone of donald powell
 what is the phone of the manager with mean salary
 highest salary of manager
+which employee has salary greater than 25000
+what is the total salary of all employees
+show the names of employees and salaries of employees
+who is the employee whose salary more than 20000 and post is manager
+who is the employee whose salary more than 20000 and less than 50000 and profile is either manager or salesrep
+which employee is doing the project of Scientific Visualisation
+which employee is doing the project of Scientific Visualisation and salary is 20000
+who isn't tejas ekawade
+joel Alvares and tejas Ekawade did

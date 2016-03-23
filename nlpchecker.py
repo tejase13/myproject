@@ -7,6 +7,7 @@ output = open('output.txt', 'w')
 for string in queries:
 #string ="Biggest and smallest project in terms of workforce"
 
+	print(queries.index(string))
 	a = NLP(string)
 	a.namedEntityRecognition()
 	a.replaceContractions()
