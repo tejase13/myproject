@@ -11,6 +11,8 @@ for string in queries:
 	a = NLP(string)
 	a.namedEntityRecognition()
 	a.replaceContractions()
+	a.lemmatize()
+	print("Lemmatized query:", a.lowercase_query)
 	a.tokenize()
 	a.removePunctAndStop()
 	a.replaceRelations()

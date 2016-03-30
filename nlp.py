@@ -9,6 +9,7 @@ from nltk.tokenize import word_tokenize
 from nltk import WordPunctTokenizer
 from initialization import Initialization
 from ner import NER
+from lemma import Lemma
 
 class NLP:
 	def __init__ (self, query):
@@ -49,6 +50,11 @@ class NLP:
 			regex = '\\b' + contraction + '\\b'
 			self.lowercase_query = re.sub(regex, self.replace_contractions[contraction], self.lowercase_query)
 
+	def lemmatize(self):
+		lem = Lemma()
+		self.lowercase_query = lem.queryLemmatize(self.lowercase_query)
+
+	
 	#Break into tokens and initialize punctuation and alphabet lists
 	def tokenize(self):
 		self.words = WordPunctTokenizer().tokenize(self.lowercase_query)

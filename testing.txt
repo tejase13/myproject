@@ -51,3 +51,5 @@ which employee is doing the project of Scientific Visualisation
 which employee is doing the project of Scientific Visualisation and salary is 20000
 who isn't tejas ekawade
 joel Alvares and tejas Ekawade did
+What is Larry King's salary
+WHat is Joel Alvares' department
