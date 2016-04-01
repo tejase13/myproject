@@ -106,7 +106,10 @@ class QueryConstruction:
 				if self.where_list[index - 2] in self.attr_datatype:
 					if self.attr_datatype[self.where_list[index - 2]] == 'varchar':
 						self.final_query += '\'' 
-						self.final_query += self.where_list[index]
+						if self.where_list[index - 2] == 'ename' or self.where_list[index - 2] == 'hod':
+							self.final_query += self.where_list[index].upper()
+						else:
+							self.final_query += self.where_list[index]
 						self.final_query += '\''
 					elif self.attr_datatype[self.where_list[index - 2]] == 'int':
 						self.final_query += self.where_list[index]

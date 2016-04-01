@@ -445,4 +445,24 @@ class NLP:
 			for index in range(len(self.WHERE)):
 				if (index + 1) % 4 == 2:
 					self.WHERE[index] = self.ant_operators[self.WHERE[index]]
-		
+
+	def removeDuplicates(self):
+		duplicate_dict = {}
+		for attr in self.SELECT:
+			if attr in duplicate_dict:
+				duplicate_dict[attr] += 1
+			else:
+				duplicate_dict[attr] = 1
+		for attr in duplicate_dict:
+			if duplicate_dict[attr] > 1:
+				self.SELECT.remove(attr)
+
+	def cleaningSelectList(self):
+		attr_indices = []
+		for index in range(len(self.SELECT)):
+			if self.SELECT[index] in self.WHERE:
+				attr_indices.append(index)
+		if len(attr_indices) == len(self.SELECT):
+			attr_indices.sort(reverse = True)
+			for index in attr_indices:
+				self.SELECT.pop(index)

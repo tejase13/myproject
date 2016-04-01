@@ -29,6 +29,8 @@ class NLPChecker():
 		a.unknownAttr()
 		a.relationSearch()
 		a.negationCheck()
+		a.removeDuplicates()
+		a.cleaningSelectList()
 		#print(a.SELECT)
 		#print(a.WHERE)
 		#print("Unique relation ",a.unique_attribute_relation)
