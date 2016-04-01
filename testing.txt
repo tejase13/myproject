@@ -10,7 +10,7 @@ whats the dept id of Sales department
 What is the dept id of employee with id 6
 Strength of project id 7
 employee name where salary is greater than 5000 and less than 75000 and works in project id 7
-Salary of manager who works in HR or sales department
+Salary of tester who works in HR or sales department
 Employee ids working in sales department
 Find the employee name and salary of eid 10 and pid 15
 Biggest project in terms of workforce
@@ -28,7 +28,6 @@ Employee id of Larry King
 Salary of Carl Diaz
 What is the post of Rebecca Thompson
 What is the workforce of Notification Service
-how many people are working on Data Science Angels
 which employees are working on Data Science Angels
 Phone of Donald Powell
 tejas ekawade salary
@@ -37,16 +36,15 @@ Employee id of larry king
 Salary of carl diaz
 What is the post of rebecca thompson
 What is the workforce of notification service
-how many people are working on data science angels
 which employees are working on data science angels
 Phone of donald powell
-what is the phone of the manager with mean salary
-highest salary of manager
+what is the phone of the tester with mean salary
+highest salary of tester
 which employee has salary greater than 25000
 what is the total salary of all employees
 show the names of employees and salaries of employees
-who is the employee whose salary more than 20000 and post is manager
-who is the employee whose salary more than 20000 and less than 50000 and profile is either manager or salesrep
+who is the employee whose salary more than 20000 and post is tester
+who is the employee whose salary more than 20000 and less than 50000 and profile is either tester or salesrep
 which employee is doing the project of Scientific Visualisation
 which employee is doing the project of Scientific Visualisation and salary is 20000
 who isn't tejas ekawade

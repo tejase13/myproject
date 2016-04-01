@@ -4,7 +4,7 @@ import sqlite3
 import shelve
 from nltk.corpus import state_union
 import collections
-relations1 = {'worker':'employee', 'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
+relations1 = {'worker':'employee','people':'employee', 'person':'employee',  'staffer':'employee','staff':'employee', 'clerk':'employee', 'personnel':'employee', 'individual':'employee', 'laborer':'employee', 'employer':'employee', 'member':'employee', 'cashier':'employee', 'customer':'employee', 'student':'employee', 'job':'employee', 'employment':'employee', 'proletariat':'employee', 'faculty':'employee', 'participant':'employee', 'officer':'employee','workers':'employee','employees':'employee', 'employee':'employee','emp':'employee','program':'project', 'plan':'project', 'undertaking':'project', 'job':'project', 'task':'project','project':'project','proj':'project','prog':'project','prod':'project','product':'project', 'venture':'project', 'enterprise':'project', 'endeavor':'project', 'activity':'project', 'experiment':'project', 'assignment':'project', 'campaign':'project', 'idea':'project', 'series':'project', 'crusade':'project', 'initiative':'project', 'construction':'project', 'proposal':'project', 'projector ':'project','division':'department','district':'department','agency':'department','ministry':'department','dept':'department','bureau':'department','major':'department','aspect':'department','office':'department','professor':'department','facet':'department','university':'department','committee':'department','profession':'department','departmental':'department','department':'department'}
 
 relations = {}
 for key,value in relations1.items():
@@ -25,13 +25,13 @@ for i in relations:
 
 attr_relations = {'eid':['employee'],'ename':['employee'],'salary':['employee'],'post':['employee'],'phone':['employee'],'pid':['employee','project'],'did':['employee','department'],'dname':['department'],'hod':['department'],'pname':['project'],'pstrength':['project']}
 
-replace_attr = {'names':'name','identity':'id','identities':'id','wage':'salary','wages':'salary','position':'post','designation':'post','positions':'post','designations':'post','contact number':'phone', 'contact':'phone', 'hods':'hod','title':'name','topic':'project','domain':'project','workforce':'strength','manpower':'strength', 'ids':'id'}
+replace_attr = {'names':'name','identity':'id','identities':'id','wage':'salary','wages':'salary','position':'post','designation':'post','positions':'post','designations':'post','contact number':'phone', 'contact':'phone', 'hods':'hod','title':'name','topic':'project','domain':'project','workforce':'strength','manpower':'strength', 'ids':'id', 'income':'salary', 'earning' :' salary'}
 
 syn_attr = (('eid','eid'),('empid','eid'),('employee id','eid'),('emp id','eid'),('emp-id','eid'),('employee-id','eid'),('id of employee','eid'),('employee name','ename'),('ename','ename'),('empname','ename'),('name of employee','ename'),('salary','salary'),('employee salary','salary'),('employee\'s salary','salary'),('employee\'s name','ename'),('employee\'s id','eid'),('salary of employee','salary'),('employee post','post'),('post','post'),('emp post','post'),('post of employee','post'),('project id','pid'),('id of project','pid'),('department id','did'),('id of department','did'),('deptid','did'),('deptid','did'),('did','did'),('dep id','did'),('department name','dname'),('deptname','dname'),('dept name','dname'),('name of department','dname'),('head','hod'), ('hod','hod'),('leader','hod'),('pname','pname'),('project name','pname'),('name of project','pname'),('pstrength','pstrength'),('strength of project','pstrength'),('strength','pstrength'))
 
 syn_attr = collections.OrderedDict(syn_attr)
 
-syn_common = {'hr':'hr','human resources':'hr', 'marketing':'marketing','sales':'sales', 'accounting':'finance', 'finance':'finance','information technology':'information technology', 'financial consultant':'financial consultant', 'CA':'chartered accountant', 'chartered accountant':'chartered accountant' ,'developer':'developer','salesrep':'sales representative', 'sales representative':'sales representative', 'sales strategist':'sales strategist', 'operations manager': 'operations manager', 'officer hr': 'officer hr', 'hr assistant': 'hr assistant', 'business consultant': 'business consultant', 'business analyst': 'business analyst', 'BA':'business analyst'}
+syn_common = {'hr':'hr','human resource':'hr', 'marketing':'marketing','sale':'sales', 'accounting':'finance', 'finance':'finance','information technology':'information technology', 'financial consultant':'financial consultant', 'CA':'chartered accountant', 'chartered accountant':'chartered accountant' ,'developer':'developer','salesrep':'sales representative', 'sale representative':'sales representative', 'sale strategist':'sales strategist', 'operation manager': 'operations manager', 'officer hr': 'officer hr', 'hr assistant': 'hr assistant', 'business consultant': 'business consultant', 'business analyst': 'business analyst', 'BA':'business analyst'}
 
 common_attr = { 'hr':'dname','marketing':'dname','sales':'dname','finance':'dname','information technology':'dname', 'designer':'post','developer':'post', 'tester':'post', 'sales representative':'post', 'officer hr':'post', 'hr assistant':'post', 'business consultant':'post', 'business analyst':'post', 'operations manager':'post', 'sales strategist':'post', 'sales representative':'post', 'financial consultant':'post', 'chartered accountant':'post'}
 
@@ -170,7 +170,8 @@ replace_contractions = {
 "neither":"not",
 "nor":"not or",
 "either":"or",
-"but":"and"
+"but":"and",
+"how many":"count"
 }
 
 #DB part from proper noun

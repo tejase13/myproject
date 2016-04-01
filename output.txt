@@ -1,6 +1,6 @@
 select ename,eid from employee where eid = 5 or eid = 6 or eid = 3 
-select eid,pid from employee where eid = 6 or eid = 4 and pid = 20 
-select eid from employee where eid = 2 or eid = 5 and eid > 4 
+select * from employee where eid = 6 or eid = 4 and pid = 20 
+select * from employee where eid = 2 or eid = 5 and eid > 4 
 select ename,eid from employee where eid > 10 or eid <= 25 
 select salary,eid,did,pid from employee where eid > 9 or did != 33 and pid < 28 
 select ename,did,eid from employee where eid > 15 or eid < 20 
@@ -9,8 +9,8 @@ select hod from department where dname = 'hr'
 select deptid from department where dname = 'sales' 
 select did,eid from employee where eid = 6 
 select pstrength,projid from project where projid = 7 
-select ename,salary,pid from employee where salary = 5000 and salary < 75000 and pid = 7 
-select * from department,employee where dname = 'hr' or post = 'manager' or dname = 'sales' and employee.did = department.deptid 
+select ename,salary,pid from employee where salary > 5000 and salary < 75000 and pid = 7 
+select * from department,employee where dname = 'hr' or post = 'tester' or dname = 'sales' and employee.did = department.deptid 
 select * from department,employee where dname = 'sales' and employee.did = department.deptid 
 select ename,salary,eid,pid from employee where eid = 10 and pid = 15 
 select max(pstrength) from project
@@ -21,35 +21,33 @@ select * from employee,department where eid = 15 and employee.did = department.d
 select deptid from department where dname = 'hr' 
 select dname,deptid from department where deptid = 5 
 select pname,projid from project where projid = 4 
-select pid from employee where pid = 9 
-select * from department,employee where hod = 'tejas ekawade' and employee.did = department.deptid 
-select * from department where hod = 'joel alvares' and hod = 'mit gorakh' 
-select eid from employee where ename = 'larry king' 
-select salary from employee where ename = 'carl diaz' 
-select post from employee where ename = 'rebecca thompson' 
+select count(*),pid from employee where pid = 9 
+select * from department,employee where hod = 'TEJAS EKAWADE' and employee.did = department.deptid 
+select * from department where hod = 'JOEL ALVARES' and hod = 'MIT GORAKH' 
+select eid from employee where ename = 'LARRY KING' 
+select salary from employee where ename = 'CARL DIAZ' 
+select post from employee where ename = 'REBECCA THOMPSON' 
 select pstrength from project where pname = 'notification service' 
-select * from project where pname = 'data science angels' 
 select * from project,employee where pname = 'data science angels' and employee.pid = project.projid 
-select phone from employee where ename = 'donald powell' 
-select * from department,employee where hod = 'tejas ekawade' and employee.did = department.deptid 
-select * from department where hod = 'joel alvares' and hod = 'mit gorakh' 
-select eid from employee where ename = 'larry king' 
-select salary from employee where ename = 'carl diaz' 
-select post from employee where ename = 'rebecca thompson' 
+select phone from employee where ename = 'DONALD POWELL' 
+select * from department,employee where hod = 'TEJAS EKAWADE' and employee.did = department.deptid 
+select * from department where hod = 'JOEL ALVARES' and hod = 'MIT GORAKH' 
+select eid from employee where ename = 'LARRY KING' 
+select salary from employee where ename = 'CARL DIAZ' 
+select post from employee where ename = 'REBECCA THOMPSON' 
 select pstrength from project where pname = 'notification service' 
-select * from project where pname = 'data science angels' 
 select * from project,employee where pname = 'data science angels' and employee.pid = project.projid 
-select phone from employee where ename = 'donald powell' 
-select avg(salary),phone from employee where post = 'manager' 
-select max(salary) from employee where post = 'manager' 
-select salary from employee where salary > 25000 
+select phone from employee where ename = 'DONALD POWELL' 
+select avg(salary),phone from employee where post = 'tester' 
+select max(salary) from employee where post = 'tester' 
+select * from employee where salary > 25000 
 select sum(salary) from employee
-select ename from employee
-select salary,post from employee where salary > 20000 and post = 'manager' 
-select salary from employee where salary > 20000 and salary < 50000 and post = 'manager' or post = 'salesrep' 
+select ename,salary from employee
+select * from employee where salary > 20000 and post = 'tester' 
+select * from employee where salary > 20000 and salary < 50000 and post = 'tester' or post = 'sales representative' 
 select * from project,employee where pname = 'scientific visualisation' and employee.pid = project.projid 
 select * from project,employee where pname = 'scientific visualisation' and salary = 20000 and employee.pid = project.projid 
-select * from department where hod != 'tejas ekawade' 
-select deptid from department where hod = 'joel alvares' and hod = 'tejas ekawade' 
-select salary from employee where ename = 'larry king' 
-select * from department where hod = 'joel alvares' 
+select * from department where hod != 'TEJAS EKAWADE' 
+select deptid from department where hod = 'JOEL ALVARES' and hod = 'TEJAS EKAWADE' 
+select salary from employee where ename = 'LARRY KING' 
+select * from department where hod = 'JOEL ALVARES' 

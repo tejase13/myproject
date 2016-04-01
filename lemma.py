@@ -11,7 +11,7 @@ class Lemma:
             if words != 'less':
                 final.append(self.wordnet_lemmatizer.lemmatize(words))
             else: 
-                final.append("less")
+                final.append(words)
         final_str = " ".join(final)
         return final_str
         

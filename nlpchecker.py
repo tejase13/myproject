@@ -2,9 +2,6 @@
 
 from nlp import NLP
 from queryconstruction import QueryConstruction
-#queries = open("testing.txt").readlines()
-#output = open('output.txt', 'w')
-
 class NLPChecker():
 	
 #for string in queries:
@@ -15,7 +12,8 @@ class NLPChecker():
 		a.namedEntityRecognition()
 		a.replaceContractions()
 		a.lemmatize()
-		#print("Lemmatized query:", a.lowercase_query)
+
+		print("Lemmatized query:", a.lowercase_query)
 		a.tokenize()
 		a.removePunctAndStop()
 		a.replaceRelations()
@@ -45,5 +43,19 @@ class NLPChecker():
 
 		#print(b.final_query)
 		return b.final_query
-		#output.write(b.final_query + '\n')
-		#output.close()
+
+
+if __name__ == "__main__":
+	l = NLPChecker()
+
+	queries = open("testing.txt").readlines()
+	output = open('output.txt', 'w')
+
+	for string in queries:
+		q = l.execute(string)
+		
+		output.write(q + '\n')
+	output.close()
+		
+
+
