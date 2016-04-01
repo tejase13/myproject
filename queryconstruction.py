@@ -85,14 +85,15 @@ class QueryConstruction:
 				self.final_query += self.unique_attribute_relation[index]
 				if index < len(self.unique_attribute_relation) - 1:
 					self.final_query += ","
-			return 
+			return True
 		
 		if len(self.common_attribute_relation) > 0:
 			self.final_query += self.common_attribute_relation[0]
-			return
+			return True
 		
-		print ("Invalid query")
-		exit()
+		else:
+			self.final_query = "Invalid Query. Please provide appropriate information."
+			return False
 
 	def constructWherePart(self):
 

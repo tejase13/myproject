@@ -2,12 +2,15 @@
 
 # Form implementation generated from reading ui file 'prototype.ui'
 #
-# Created by: PyQt4 UI code generator 4.11.4
+# Created: Fri Apr  1 13:17:12 2016
+#      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
-import sys
+
 from PyQt4 import QtCore, QtGui
 from nlpchecker import NLPChecker
+from results import Ui_Results
+import sys
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -40,6 +43,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_10.setObjectName(_fromUtf8("verticalLayout_10"))
         self.execute_button = QtGui.QPushButton(self.centralwidget)
         self.execute_button.setEnabled(False)
+        self.execute_button.setToolTip(_fromUtf8(""))
         self.execute_button.setObjectName(_fromUtf8("execute_button"))
         self.verticalLayout_10.addWidget(self.execute_button)
         self.gridLayout.addLayout(self.verticalLayout_10, 3, 4, 1, 1)
@@ -58,7 +62,7 @@ class Ui_MainWindow(object):
         self.generated_query_label.setFont(font)
         self.generated_query_label.setScaledContents(True)
         self.generated_query_label.setObjectName(_fromUtf8("generated_query_label"))
-        self.verticalLayout_7.addWidget(self.generated_query_label, QtCore.Qt.AlignHCenter)
+        self.verticalLayout_7.addWidget(self.generated_query_label)
         self.gridLayout.addLayout(self.verticalLayout_7, 2, 0, 1, 1)
         self.verticalLayout_12 = QtGui.QVBoxLayout()
         self.verticalLayout_12.setObjectName(_fromUtf8("verticalLayout_12"))
@@ -71,7 +75,7 @@ class Ui_MainWindow(object):
         font.setPointSize(16)
         self.main_title.setFont(font)
         self.main_title.setObjectName(_fromUtf8("main_title"))
-        self.verticalLayout_3.addWidget(self.main_title, QtCore.Qt.AlignHCenter)
+        self.verticalLayout_3.addWidget(self.main_title)
         self.gridLayout.addLayout(self.verticalLayout_3, 0, 0, 1, 6)
         self.verticalLayout_4 = QtGui.QVBoxLayout()
         self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
@@ -81,7 +85,7 @@ class Ui_MainWindow(object):
         font.setPointSize(10)
         self.input_query_label.setFont(font)
         self.input_query_label.setObjectName(_fromUtf8("input_query_label"))
-        self.verticalLayout_4.addWidget(self.input_query_label, QtCore.Qt.AlignHCenter)
+        self.verticalLayout_4.addWidget(self.input_query_label)
         self.gridLayout.addLayout(self.verticalLayout_4, 1, 0, 1, 1)
         self.verticalLayout_5 = QtGui.QVBoxLayout()
         self.verticalLayout_5.setObjectName(_fromUtf8("verticalLayout_5"))
@@ -90,18 +94,20 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addWidget(self.input_query)
         self.gridLayout.addLayout(self.verticalLayout_5, 1, 1, 1, 4)
         self.translate_button = QtGui.QPushButton(self.centralwidget)
+        self.translate_button.setToolTip(_fromUtf8(""))
         self.translate_button.setObjectName(_fromUtf8("translate_button"))
         self.gridLayout.addWidget(self.translate_button, 3, 1, 1, 1)
         self.verticalLayout_6 = QtGui.QVBoxLayout()
         self.verticalLayout_6.setObjectName(_fromUtf8("verticalLayout_6"))
         self.generated_query = QtGui.QLabel(self.centralwidget)
+        self.generated_query.setText(_fromUtf8(""))
         self.generated_query.setObjectName(_fromUtf8("generated_query"))
         self.verticalLayout_6.addWidget(self.generated_query)
         self.gridLayout.addLayout(self.verticalLayout_6, 2, 1, 1, 4)
         self.gridLayout_2.addLayout(self.gridLayout, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 824, 31))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 824, 25))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtGui.QStatusBar(MainWindow)
@@ -109,27 +115,43 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
         self.translate_button.clicked.connect(self.animateClick)
+        self.execute_button.clicked.connect(self.animateClick2)
         MainWindow.show()
 
+
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow", None))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Natural Language Query Processing", None))
         self.execute_button.setText(_translate("MainWindow", "Execute", None))
-        self.generated_query_label.setText(_translate("MainWindow", "Generated Query", None))
-        self.main_title.setText(_translate("MainWindow", "Natural Language Query Processing", None))
-        self.input_query_label.setText(_translate("MainWindow", "Input Query", None))
+        self.generated_query_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Generated Query:</span></p></body></html>", None))
+        self.main_title.setText(_translate("MainWindow", "<html><head/><body><p align=\"center\"><span style=\" font-weight:600;\">Natural Language Query Processing</span></p></body></html>", None))
+        self.input_query_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-weight:600;\">Input Query:</span></p></body></html>", None))
         self.translate_button.setText(_translate("MainWindow", "Translate", None))
-        self.generated_query.setText(_translate("MainWindow", "", None))
+
+
 
     def animateClick(self):
         query = self.input_query.text()
+        InvalidQuery = "Invalid Query. Please provide appropriate information."
         lp = NLPChecker()
-        self.generated_query.setText(lp.execute(query))
-        self.execute_button.setEnabled(True)
+        self.final_query = lp.execute(query)
+        print (self.final_query)
+        self.generated_query.setText(self.final_query)
+        if self.final_query == InvalidQuery:
+            self.execute_button.setEnabled(False)
+        else:
+            self.execute_button.setEnabled(True)
+
+    def animateClick2(self):
+        self.dialog = Ui_Results()
+        self.w = QtGui.QDialog()
+        self.dialog.setupUi(self.w, self.final_query)
+        self.w.show()
 
 if __name__ == "__main__":
-	app = QtGui.QApplication([])
-	win = QtGui.QMainWindow()
-	foo = Ui_MainWindow()
-	foo.setupUi(win)
-	sys.exit(app.exec_())
+    app = QtGui.QApplication([])
+    win = QtGui.QMainWindow()
+    foo = Ui_MainWindow()
+    foo.setupUi(win)
+    sys.exit(app.exec_())

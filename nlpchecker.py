@@ -37,8 +37,9 @@ class NLPChecker():
 
 		b.checkJoin()
 		b.constructSelectPart()
-		b.constructFromPart()
-		b.constructWherePart()
+		check = b.constructFromPart()
+		if check is True:
+			b.constructWherePart()
 
 		#print(b.final_query)
 		return b.final_query
