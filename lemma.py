@@ -10,6 +10,8 @@ class Lemma:
         for words in sent_tok:
             if words != 'less':
                 final.append(self.wordnet_lemmatizer.lemmatize(words))
+            else: 
+                final.append("less")
         final_str = " ".join(final)
         return final_str
         
