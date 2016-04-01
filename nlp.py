@@ -10,6 +10,8 @@ from nltk import WordPunctTokenizer
 from initialization import Initialization
 from ner import NER
 from lemma import Lemma
+from nltk.stem import WordNetLemmatizer
+
 
 class NLP:
 	def __init__ (self, query):

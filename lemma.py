@@ -5,12 +5,13 @@ class Lemma:
         self.wordnet_lemmatizer = WordNetLemmatizer()
 
     def queryLemmatize(self, query):    
-        '''sent_tok = query.split(" ")
+        sent_tok = query.split(" ")
         final = []
         for words in sent_tok:
-            final.append(self.wordnet_lemmatizer.lemmatize(words))
+            if words != 'less':
+                final.append(self.wordnet_lemmatizer.lemmatize(words))
         final_str = " ".join(final)
         return final_str
-        '''
-        return self.wordnet_lemmatizer.lemmatize(query)
+        
+        #return self.wordnet_lemmatizer.lemmatize(query)
 
