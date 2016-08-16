@@ -1,0 +1,13 @@
+#attr_relations : to which relation/relations the attribute belongs to
+#replace_attr : some synonyms for attributes values for eg id -> identities 
+#syn_attr : synonyms for actual attribtutes(ordered list)
+#syn_common : synonyms of common nouns 
+#common_attr : to which attribute the common noun belongs
+#relations : relations and their synonyms
+#relations_attr : relations and the attribute they consist
+#replace_operators :  synonyms for attributes
+#ant_operators : antonyms of operators
+#operator_list : list of operators
+#syn_aggregate : synonyms of aggregate functions
+#aggregate_list : list of aggregate functions
+#replace_contractions : contractions to be replaced
